@@ -304,7 +304,7 @@ ManyHellos_prepareResult is a string
 $input_params is a ManyHellos.ManyHellos_runEachInputParams
 $res is a ManyHellos.ManyHellos_runEachResult
 ManyHellos_runEachInputParams is a reference to a hash where the following keys are defined:
-	num_jobs has a value which is an int
+	job_number has a value which is an int
 ManyHellos_runEachResult is a string
 
 </pre>
@@ -316,7 +316,7 @@ ManyHellos_runEachResult is a string
 $input_params is a ManyHellos.ManyHellos_runEachInputParams
 $res is a ManyHellos.ManyHellos_runEachResult
 ManyHellos_runEachInputParams is a reference to a hash where the following keys are defined:
-	num_jobs has a value which is an int
+	job_number has a value which is an int
 ManyHellos_runEachResult is a string
 
 
@@ -696,7 +696,7 @@ runEach()
 
 <pre>
 a reference to a hash where the following keys are defined:
-num_jobs has a value which is an int
+job_number has a value which is an int
 
 </pre>
 
@@ -705,7 +705,7 @@ num_jobs has a value which is an int
 =begin text
 
 a reference to a hash where the following keys are defined:
-num_jobs has a value which is an int
+job_number has a value which is an int
 
 
 =end text

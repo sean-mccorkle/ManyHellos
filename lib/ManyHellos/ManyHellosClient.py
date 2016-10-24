@@ -58,7 +58,7 @@ class ManyHellos(object):
     def manyHellos_runEach(self, input_params, context=None):
         """
         :param input_params: instance of type "ManyHellos_runEachInputParams"
-           (runEach()) -> structure: parameter "num_jobs" of Long
+           (runEach()) -> structure: parameter "job_number" of Long
         :returns: instance of type "ManyHellos_runEachResult"
         """
         return self._client.call_method(

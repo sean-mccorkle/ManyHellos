@@ -21,26 +21,26 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "num_jobs"
+    "job_number"
 })
 public class ManyHellosRunEachInputParams {
 
-    @JsonProperty("num_jobs")
-    private Long numJobs;
+    @JsonProperty("job_number")
+    private Long jobNumber;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("num_jobs")
-    public Long getNumJobs() {
-        return numJobs;
+    @JsonProperty("job_number")
+    public Long getJobNumber() {
+        return jobNumber;
     }
 
-    @JsonProperty("num_jobs")
-    public void setNumJobs(Long numJobs) {
-        this.numJobs = numJobs;
+    @JsonProperty("job_number")
+    public void setJobNumber(Long jobNumber) {
+        this.jobNumber = jobNumber;
     }
 
-    public ManyHellosRunEachInputParams withNumJobs(Long numJobs) {
-        this.numJobs = numJobs;
+    public ManyHellosRunEachInputParams withJobNumber(Long jobNumber) {
+        this.jobNumber = jobNumber;
         return this;
     }
 
@@ -56,7 +56,7 @@ public class ManyHellosRunEachInputParams {
 
     @Override
     public String toString() {
-        return ((((("ManyHellosRunEachInputParams"+" [numJobs=")+ numJobs)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((("ManyHellosRunEachInputParams"+" [jobNumber=")+ jobNumber)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

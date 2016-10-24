@@ -20,8 +20,8 @@ does is run several "hello world" programs.
     # the latter method is running.
     ######################################### noqa
     VERSION = "0.0.1"
-    GIT_URL = ""
-    GIT_COMMIT_HASH = ""
+    GIT_URL = "https://github.com/sean-mccorkle/ManyHellos.git"
+    GIT_COMMIT_HASH = "b50816e9b2bb933a040909ddbb594c0db5b6ff53"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -75,7 +75,7 @@ does is run several "hello world" programs.
     def manyHellos_runEach(self, ctx, input_params):
         """
         :param input_params: instance of type "ManyHellos_runEachInputParams"
-           (runEach()) -> structure: parameter "num_jobs" of Long
+           (runEach()) -> structure: parameter "job_number" of Long
         :returns: instance of type "ManyHellos_runEachResult"
         """
         # ctx is the context object

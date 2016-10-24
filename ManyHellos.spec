@@ -37,7 +37,7 @@ module ManyHellos {
     /* runEach() */
 
     typedef structure {
-        int     num_jobs;
+        int     job_number;
     } ManyHellos_runEachInputParams;
 
     typedef  string  ManyHellos_runEachResult;
