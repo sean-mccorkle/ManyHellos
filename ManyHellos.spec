@@ -58,4 +58,6 @@ module ManyHellos {
 
     funcdef  manyHellos_collect( ManyHellos_collectInputParams input_params ) returns ( ManyHellos_collectResult res ) authentication required;
 
+    funcdef  hi() returns (string);
+
 };
