@@ -125,8 +125,9 @@ $input_params is a ManyHellos.ManyHellosInputParams
 $output_obj is a ManyHellos.ManyHellosOutputObj
 ManyHellosInputParams is a reference to a hash where the following keys are defined:
 	hello_msg has a value which is a string
-	num_jobs has a value which is an int
 	time_limit has a value which is an int
+	njs_wrapper_url has a value which is a string
+	token has a value which is a string
 ManyHellosOutputObj is a string
 
 </pre>
@@ -139,8 +140,9 @@ $input_params is a ManyHellos.ManyHellosInputParams
 $output_obj is a ManyHellos.ManyHellosOutputObj
 ManyHellosInputParams is a reference to a hash where the following keys are defined:
 	hello_msg has a value which is a string
-	num_jobs has a value which is an int
 	time_limit has a value which is an int
+	njs_wrapper_url has a value which is a string
+	token has a value which is a string
 ManyHellosOutputObj is a string
 
 
@@ -204,7 +206,7 @@ ManyHellosOutputObj is a string
 
 =head2 manyHellos_prepare
 
-  $res = $obj->manyHellos_prepare($input_params)
+  $tasks = $obj->manyHellos_prepare($input_params)
 
 =over 4
 
@@ -214,10 +216,12 @@ ManyHellosOutputObj is a string
 
 <pre>
 $input_params is a ManyHellos.ManyHellos_prepareInputParams
-$res is a ManyHellos.ManyHellos_prepareResult
+$tasks is a ManyHellos.ManyHellos_tasklist
 ManyHellos_prepareInputParams is a reference to a hash where the following keys are defined:
 	num_jobs has a value which is an int
-ManyHellos_prepareResult is a string
+ManyHellos_tasklist is a reference to a list where each element is a ManyHellos.ManyHellos_task
+ManyHellos_task is a reference to a hash where the following keys are defined:
+	job_number has a value which is an int
 
 </pre>
 
@@ -226,10 +230,12 @@ ManyHellos_prepareResult is a string
 =begin text
 
 $input_params is a ManyHellos.ManyHellos_prepareInputParams
-$res is a ManyHellos.ManyHellos_prepareResult
+$tasks is a ManyHellos.ManyHellos_tasklist
 ManyHellos_prepareInputParams is a reference to a hash where the following keys are defined:
 	num_jobs has a value which is an int
-ManyHellos_prepareResult is a string
+ManyHellos_tasklist is a reference to a list where each element is a ManyHellos.ManyHellos_task
+ManyHellos_task is a reference to a hash where the following keys are defined:
+	job_number has a value which is an int
 
 
 =end text
@@ -292,7 +298,7 @@ ManyHellos_prepareResult is a string
 
 =head2 manyHellos_runEach
 
-  $res = $obj->manyHellos_runEach($input_params)
+  $res = $obj->manyHellos_runEach($task)
 
 =over 4
 
@@ -301,9 +307,9 @@ ManyHellos_prepareResult is a string
 =begin html
 
 <pre>
-$input_params is a ManyHellos.ManyHellos_runEachInputParams
+$task is a ManyHellos.ManyHellos_task
 $res is a ManyHellos.ManyHellos_runEachResult
-ManyHellos_runEachInputParams is a reference to a hash where the following keys are defined:
+ManyHellos_task is a reference to a hash where the following keys are defined:
 	job_number has a value which is an int
 ManyHellos_runEachResult is a string
 
@@ -313,9 +319,9 @@ ManyHellos_runEachResult is a string
 
 =begin text
 
-$input_params is a ManyHellos.ManyHellos_runEachInputParams
+$task is a ManyHellos.ManyHellos_task
 $res is a ManyHellos.ManyHellos_runEachResult
-ManyHellos_runEachInputParams is a reference to a hash where the following keys are defined:
+ManyHellos_task is a reference to a hash where the following keys are defined:
 	job_number has a value which is an int
 ManyHellos_runEachResult is a string
 
@@ -342,10 +348,10 @@ ManyHellos_runEachResult is a string
 							       "Invalid argument count for function manyHellos_runEach (received $n, expecting 1)");
     }
     {
-	my($input_params) = @args;
+	my($task) = @args;
 
 	my @_bad_arguments;
-        (ref($input_params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"input_params\" (value was \"$input_params\")");
+        (ref($task) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"task\" (value was \"$task\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to manyHellos_runEach:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -561,7 +567,8 @@ sub _validate_version {
 
 =item Description
 
-Main service call:  manyHellos()
+was the main service call manyHellos(), now Im not sure what this does - initializes, but that
+should probably be in the constructor?   maybe manyHellos_prepare()
 
 
 =item Definition
@@ -571,8 +578,9 @@ Main service call:  manyHellos()
 <pre>
 a reference to a hash where the following keys are defined:
 hello_msg has a value which is a string
-num_jobs has a value which is an int
 time_limit has a value which is an int
+njs_wrapper_url has a value which is a string
+token has a value which is a string
 
 </pre>
 
@@ -582,8 +590,9 @@ time_limit has a value which is an int
 
 a reference to a hash where the following keys are defined:
 hello_msg has a value which is a string
-num_jobs has a value which is an int
 time_limit has a value which is an int
+njs_wrapper_url has a value which is a string
+token has a value which is a string
 
 
 =end text
@@ -653,7 +662,7 @@ num_jobs has a value which is an int
 
 
 
-=head2 ManyHellos_prepareResult
+=head2 ManyHellos_task
 
 =over 4
 
@@ -664,14 +673,18 @@ num_jobs has a value which is an int
 =begin html
 
 <pre>
-a string
+a reference to a hash where the following keys are defined:
+job_number has a value which is an int
+
 </pre>
 
 =end html
 
 =begin text
 
-a string
+a reference to a hash where the following keys are defined:
+job_number has a value which is an int
+
 
 =end text
 
@@ -679,15 +692,10 @@ a string
 
 
 
-=head2 ManyHellos_runEachInputParams
+=head2 ManyHellos_tasklist
 
 =over 4
 
-
-
-=item Description
-
-runEach()
 
 
 =item Definition
@@ -695,18 +703,14 @@ runEach()
 =begin html
 
 <pre>
-a reference to a hash where the following keys are defined:
-job_number has a value which is an int
-
+a reference to a list where each element is a ManyHellos.ManyHellos_task
 </pre>
 
 =end html
 
 =begin text
 
-a reference to a hash where the following keys are defined:
-job_number has a value which is an int
-
+a reference to a list where each element is a ManyHellos.ManyHellos_task
 
 =end text
 
@@ -718,6 +722,11 @@ job_number has a value which is an int
 
 =over 4
 
+
+
+=item Description
+
+runEach()
 
 
 =item Definition

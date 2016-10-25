@@ -12,12 +12,16 @@ module ManyHellos {
         Insert your typespec information here.
     */
 
-    /* Main service call:  manyHellos() */
+    /* 
+       was the main service call manyHellos(), now Im not sure what this does - initializes, but that
+       should probably be in the constructor?   maybe manyHellos_prepare()
+    */
 
     typedef structure {
         string  hello_msg;
-        int     num_jobs;
         int     time_limit;
+        string  njs_wrapper_url;
+        string  token;
     } ManyHellosInputParams;
 
     typedef string ManyHellosOutputObj;
@@ -30,19 +34,19 @@ module ManyHellos {
         int     num_jobs;
     } ManyHellos_prepareInputParams;
 
-    typedef  string  ManyHellos_prepareResult;
+    typedef  structure {
+        int  job_number;
+    } ManyHellos_task;
 
-    funcdef  manyHellos_prepare( ManyHellos_prepareInputParams input_params ) returns ( ManyHellos_prepareResult res ) authentication required;
+    typedef  list<ManyHellos_task>  ManyHellos_tasklist;
+
+    funcdef  manyHellos_prepare( ManyHellos_prepareInputParams input_params ) returns ( ManyHellos_tasklist tasks ) authentication required;
 
     /* runEach() */
 
-    typedef structure {
-        int     job_number;
-    } ManyHellos_runEachInputParams;
-
     typedef  string  ManyHellos_runEachResult;
 
-    funcdef  manyHellos_runEach( ManyHellos_runEachInputParams input_params )  returns ( ManyHellos_runEachResult res ) authentication required;
+    funcdef  manyHellos_runEach( ManyHellos_task task )  returns ( ManyHellos_runEachResult res ) authentication required;
 
     /* collect() */
 

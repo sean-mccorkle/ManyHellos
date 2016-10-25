@@ -17,6 +17,7 @@ from biokbase.workspace.client import Workspace as workspaceService
 from ManyHellos.ManyHellosImpl import ManyHellos
 from ManyHellos.ManyHellosServer import MethodContext
 
+from biokbase.njs_wrapper.client import NarrativeJobService as NJS
 
 class ManyHellosTest(unittest.TestCase):
 
@@ -72,7 +73,7 @@ class ManyHellosTest(unittest.TestCase):
         return self.__class__.ctx
 
     # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
-    def test_your_method(self):
+    #def test_your_method(self):
         # Prepare test objects in workspace if needed using
         # self.getWsClient().save_objects({'workspace': self.getWsName(),
         #                                  'objects': []})
@@ -82,4 +83,60 @@ class ManyHellosTest(unittest.TestCase):
         #
         # Check returned data with
         # self.assertEqual(ret[...], ...) or other unittest methods
-        pass
+        #pass
+
+    #def test_NJS_connect( self ):
+    #    print( "about to test NJS connect" )
+    #    tok = os.environ.get('KB_AUTH_TOKEN')
+    #    print( "tok is ", tok )
+    #    w = NJS( url="https://ci.kbase.us/services/njs_wrapper", token=tok )
+    #    pprint( w )
+    #    v = w.ver()
+    #    pprint( v )
+    #    s = w.status()
+    #    pprint( s )
+    #    l = w.list_config()
+    #    pprint( l )
+
+
+    def test_manyHellos(self):
+        # Prepare test objects in workspace if needed using
+        # self.getWsClient().save_objects({'workspace': self.getWsName(),
+        #                                  'objects': []})
+        #
+        # Run your method by
+        print( "in test_manyHellos() about to run...")
+        input_params = { 'hello_msg': "Hai",
+                         'num_jobs': 3,
+                         'time_limit':  5000000,
+                         'njs_wrapper_url': "https://ci.kbase.us/services/njs_wrapper",
+                         'token': os.environ.get('KB_AUTH_TOKEN')
+                       }
+
+        ctx = self.getContext()
+        # NOTE - this is not right - should call a constructor that is used for further methods
+        #ret = self.getImpl().manyHellos( self.getContext(), input_params )
+        print( "about to construct..." )
+        mh = ManyHellos( None )
+        pprint( mh )
+        ret = mh.manyHellos( ctx, input_params )
+        print( ret )
+
+        tasks_ret = mh.manyHellos_prepare( ctx, { 'num_jobs': input_params["num_jobs"] } );
+        print( "back in test_manyHellos")
+        tasks = tasks_ret[0]
+        pprint( tasks )
+
+        for task in tasks:
+            pprint( ["   launching task", task]  )
+            r1 = mh.manyHellos_runEach( ctx, task )
+            pprint( r1 )
+
+        r2 = mh.manyHellos_collect( ctx, { 'num_jobs': input_params["num_jobs"] } );
+        pprint( r2 )
+
+        #
+        # Check returned data with
+        # self.assertEqual(ret[...], ...) or other unittest methods
+        print( "exiting test_manyHellos()")
+

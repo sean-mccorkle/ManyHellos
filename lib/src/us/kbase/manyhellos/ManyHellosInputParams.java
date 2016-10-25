@@ -14,7 +14,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 /**
  * <p>Original spec-file type: ManyHellosInputParams</p>
  * <pre>
- * Main service call:  manyHellos()
+ * was the main service call manyHellos(), now Im not sure what this does - initializes, but that
+ * should probably be in the constructor?   maybe manyHellos_prepare()
  * </pre>
  * 
  */
@@ -22,17 +23,20 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
     "hello_msg",
-    "num_jobs",
-    "time_limit"
+    "time_limit",
+    "njs_wrapper_url",
+    "token"
 })
 public class ManyHellosInputParams {
 
     @JsonProperty("hello_msg")
     private String helloMsg;
-    @JsonProperty("num_jobs")
-    private Long numJobs;
     @JsonProperty("time_limit")
     private Long timeLimit;
+    @JsonProperty("njs_wrapper_url")
+    private String njsWrapperUrl;
+    @JsonProperty("token")
+    private String token;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("hello_msg")
@@ -47,21 +51,6 @@ public class ManyHellosInputParams {
 
     public ManyHellosInputParams withHelloMsg(String helloMsg) {
         this.helloMsg = helloMsg;
-        return this;
-    }
-
-    @JsonProperty("num_jobs")
-    public Long getNumJobs() {
-        return numJobs;
-    }
-
-    @JsonProperty("num_jobs")
-    public void setNumJobs(Long numJobs) {
-        this.numJobs = numJobs;
-    }
-
-    public ManyHellosInputParams withNumJobs(Long numJobs) {
-        this.numJobs = numJobs;
         return this;
     }
 
@@ -80,6 +69,36 @@ public class ManyHellosInputParams {
         return this;
     }
 
+    @JsonProperty("njs_wrapper_url")
+    public String getNjsWrapperUrl() {
+        return njsWrapperUrl;
+    }
+
+    @JsonProperty("njs_wrapper_url")
+    public void setNjsWrapperUrl(String njsWrapperUrl) {
+        this.njsWrapperUrl = njsWrapperUrl;
+    }
+
+    public ManyHellosInputParams withNjsWrapperUrl(String njsWrapperUrl) {
+        this.njsWrapperUrl = njsWrapperUrl;
+        return this;
+    }
+
+    @JsonProperty("token")
+    public String getToken() {
+        return token;
+    }
+
+    @JsonProperty("token")
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public ManyHellosInputParams withToken(String token) {
+        this.token = token;
+        return this;
+    }
+
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -92,7 +111,7 @@ public class ManyHellosInputParams {
 
     @Override
     public String toString() {
-        return ((((((((("ManyHellosInputParams"+" [helloMsg=")+ helloMsg)+", numJobs=")+ numJobs)+", timeLimit=")+ timeLimit)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((("ManyHellosInputParams"+" [helloMsg=")+ helloMsg)+", timeLimit=")+ timeLimit)+", njsWrapperUrl=")+ njsWrapperUrl)+", token=")+ token)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

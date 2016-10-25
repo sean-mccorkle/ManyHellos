@@ -35,10 +35,12 @@ class ManyHellos(object):
 
     def manyHellos(self, input_params, context=None):
         """
-        :param input_params: instance of type "ManyHellosInputParams" (Main
-           service call:  manyHellos()) -> structure: parameter "hello_msg"
-           of String, parameter "num_jobs" of Long, parameter "time_limit" of
-           Long
+        :param input_params: instance of type "ManyHellosInputParams" (was
+           the main service call manyHellos(), now Im not sure what this does
+           - initializes, but that should probably be in the constructor?  
+           maybe manyHellos_prepare()) -> structure: parameter "hello_msg" of
+           String, parameter "time_limit" of Long, parameter
+           "njs_wrapper_url" of String, parameter "token" of String
         :returns: instance of type "ManyHellosOutputObj"
         """
         return self._client.call_method(
@@ -49,21 +51,22 @@ class ManyHellos(object):
         """
         :param input_params: instance of type "ManyHellos_prepareInputParams"
            (prepare()) -> structure: parameter "num_jobs" of Long
-        :returns: instance of type "ManyHellos_prepareResult"
+        :returns: instance of type "ManyHellos_tasklist" -> list of type
+           "ManyHellos_task" -> structure: parameter "job_number" of Long
         """
         return self._client.call_method(
             'ManyHellos.manyHellos_prepare',
             [input_params], self._service_ver, context)
 
-    def manyHellos_runEach(self, input_params, context=None):
+    def manyHellos_runEach(self, task, context=None):
         """
-        :param input_params: instance of type "ManyHellos_runEachInputParams"
-           (runEach()) -> structure: parameter "job_number" of Long
-        :returns: instance of type "ManyHellos_runEachResult"
+        :param task: instance of type "ManyHellos_task" -> structure:
+           parameter "job_number" of Long
+        :returns: instance of type "ManyHellos_runEachResult" (runEach())
         """
         return self._client.call_method(
             'ManyHellos.manyHellos_runEach',
-            [input_params], self._service_ver, context)
+            [task], self._service_ver, context)
 
     def manyHellos_collect(self, input_params, context=None):
         """

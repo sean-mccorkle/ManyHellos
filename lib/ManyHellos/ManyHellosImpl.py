@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 #BEGIN_HEADER
+
+from pprint import pprint 
+from biokbase.njs_wrapper.client import NarrativeJobService as NJS
+
 #END_HEADER
 
 
@@ -21,7 +25,7 @@ does is run several "hello world" programs.
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/sean-mccorkle/ManyHellos.git"
-    GIT_COMMIT_HASH = "b50816e9b2bb933a040909ddbb594c0db5b6ff53"
+    GIT_COMMIT_HASH = "c0208942c3721564dca27c31a14b289e0d5e6e46"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -30,21 +34,40 @@ does is run several "hello world" programs.
     # be found
     def __init__(self, config):
         #BEGIN_CONSTRUCTOR
+        main_message = ""
+        number_of_jobs = 0
+        time_limit = 0
         #END_CONSTRUCTOR
         pass
 
 
     def manyHellos(self, ctx, input_params):
         """
-        :param input_params: instance of type "ManyHellosInputParams" (Main
-           service call:  manyHellos()) -> structure: parameter "hello_msg"
-           of String, parameter "num_jobs" of Long, parameter "time_limit" of
-           Long
+        :param input_params: instance of type "ManyHellosInputParams" (was
+           the main service call manyHellos(), now Im not sure what this does
+           - initializes, but that should probably be in the constructor?  
+           maybe manyHellos_prepare()) -> structure: parameter "hello_msg" of
+           String, parameter "time_limit" of Long, parameter
+           "njs_wrapper_url" of String, parameter "token" of String
         :returns: instance of type "ManyHellosOutputObj"
         """
         # ctx is the context object
         # return variables are: output_obj
         #BEGIN manyHellos
+        print( "Hi this is manyHellos()!" )
+        print( "hello_mesg is ", input_params["hello_msg"] )
+        print( "time_limit is ", input_params["time_limit"] )
+        print( "njs_wrapper_url is ", input_params["njs_wrapper_url"] )
+        print( "token is ", input_params["token"] )
+
+        self.main_message = input_params["hello_msg"]
+        self.time_limit = input_params["time_limit"]
+        self.njs_wrapper_url = input_params["njs_wrapper_url"]
+        self.token = input_params["token"]
+
+        output_obj = "manyHellos() default return string"
+
+        print( "this is manyHellos(), signing off!  Bye!" )
         #END manyHellos
 
         # At some point might do deeper type checking...
@@ -58,29 +81,47 @@ does is run several "hello world" programs.
         """
         :param input_params: instance of type "ManyHellos_prepareInputParams"
            (prepare()) -> structure: parameter "num_jobs" of Long
-        :returns: instance of type "ManyHellos_prepareResult"
+        :returns: instance of type "ManyHellos_tasklist" -> list of type
+           "ManyHellos_task" -> structure: parameter "job_number" of Long
         """
         # ctx is the context object
-        # return variables are: res
+        # return variables are: tasks
         #BEGIN manyHellos_prepare
+
+        print( "this is manyHellos_prepare..." )
+        print( "num_jobs is ", input_params["num_jobs"] )
+        self.num_jobs = input_params["num_jobs"];
+
+        tasks = []
+        for i in range( self.num_jobs ):
+            tasks.append( { 'job_number': i } )
+
+        pprint( ["exiting manyHellos_prepare, tasks is", tasks] )
+
         #END manyHellos_prepare
 
         # At some point might do deeper type checking...
-        if not isinstance(res, basestring):
+        if not isinstance(tasks, list):
             raise ValueError('Method manyHellos_prepare return value ' +
-                             'res is not type basestring as required.')
+                             'tasks is not type list as required.')
         # return the results
-        return [res]
+        return [tasks]
 
-    def manyHellos_runEach(self, ctx, input_params):
+    def manyHellos_runEach(self, ctx, task):
         """
-        :param input_params: instance of type "ManyHellos_runEachInputParams"
-           (runEach()) -> structure: parameter "job_number" of Long
-        :returns: instance of type "ManyHellos_runEachResult"
+        :param task: instance of type "ManyHellos_task" -> structure:
+           parameter "job_number" of Long
+        :returns: instance of type "ManyHellos_runEachResult" (runEach())
         """
         # ctx is the context object
         # return variables are: res
         #BEGIN manyHellos_runEach
+        print( "this is manyHellos_runEach..." )
+        pprint( [ "task is ", task] )
+
+        res = "default manyHellos_runEach() result"
+
+        print( "exiting manyHellos_runEach(), res is", res )
         #END manyHellos_runEach
 
         # At some point might do deeper type checking...
@@ -99,6 +140,14 @@ does is run several "hello world" programs.
         # ctx is the context object
         # return variables are: res
         #BEGIN manyHellos_collect
+
+        print( "this is manyHellos_collect..." )
+        print( "num_jobs is ", input_params["num_jobs"] )
+
+        res = "default manyHellos_collect() result"
+
+        print( "exiting manyHellos_collect, res is", res )
+
         #END manyHellos_collect
 
         # At some point might do deeper type checking...
@@ -107,6 +156,7 @@ does is run several "hello world" programs.
                              'res is not type basestring as required.')
         # return the results
         return [res]
+
     def status(self, ctx):
         #BEGIN_STATUS
         returnVal = {'state': "OK",
