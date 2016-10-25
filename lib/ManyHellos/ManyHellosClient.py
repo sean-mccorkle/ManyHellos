@@ -78,6 +78,14 @@ class ManyHellos(object):
             'ManyHellos.manyHellos_collect',
             [input_params], self._service_ver, context)
 
+    def hi(self, context=None):
+        """
+        :returns: instance of String
+        """
+        return self._client.call_method(
+            'ManyHellos.hi',
+            [], self._service_ver, context)
+
     def status(self, context=None):
         return self._client.call_method('ManyHellos.status',
                                         [], self._service_ver, context)

@@ -89,14 +89,6 @@ sub new
 	    $self->{token} = $token->token;
 	    $self->{client}->{token} = $token->token;
 	}
-        else
-        {
-	    #
-	    # All methods in this module require authentication. In this case, if we
-	    # don't have a token, we can't continue.
-	    #
-	    die "Authentication failed: " . $token->error_message;
-	}
     }
 
     my $ua = $self->{client}->ua;	 
@@ -470,6 +462,75 @@ ManyHellos_collectResult is a string
     }
 }
  
+
+
+=head2 hi
+
+  $return = $obj->hi()
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$return is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$return is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub hi
+{
+    my($self, @args) = @_;
+
+# Authentication: none
+
+    if ((my $n = @args) != 0)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function hi (received $n, expecting 0)");
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "ManyHellos.hi",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'hi',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method hi",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'hi',
+				       );
+    }
+}
+ 
   
 sub status
 {
@@ -513,16 +574,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'manyHellos_collect',
+                method_name => 'hi',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method manyHellos_collect",
+            error => "Error invoking method hi",
             status_line => $self->{client}->status_line,
-            method_name => 'manyHellos_collect',
+            method_name => 'hi',
         );
     }
 }

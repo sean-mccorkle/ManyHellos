@@ -345,6 +345,10 @@ class Application(object):
                              name='ManyHellos.manyHellos_collect',
                              types=[dict])
         self.method_authentication['ManyHellos.manyHellos_collect'] = 'required' # noqa
+        self.rpc_service.add(impl_ManyHellos.hi,
+                             name='ManyHellos.hi',
+                             types=[])
+        self.method_authentication['ManyHellos.hi'] = 'none' # noqa
         self.rpc_service.add(impl_ManyHellos.status,
                              name='ManyHellos.status',
                              types=[dict])

@@ -127,10 +127,16 @@ class ManyHellosTest(unittest.TestCase):
         tasks = tasks_ret[0]
         pprint( tasks )
 
+        tok = os.environ.get('KB_AUTH_TOKEN')
+        njs = NJS( url="https://ci.kbase.us/services/njs_wrapper", token=tok )
+        pprint( njs)
         for task in tasks:
             pprint( ["   launching task", task]  )
-            r1 = mh.manyHellos_runEach( ctx, task )
-            pprint( r1 )
+            #r1 = mh.manyHellos_runEach( ctx, task )
+            #pprint( r1 )
+            jobid = njs.run_job( {'method': "ManyHellos.manyHellos_runEach", 'params': [task], 'service_ver':  "beta"} )
+            print( "job_id", jobid )
+
 
         r2 = mh.manyHellos_collect( ctx, { 'num_jobs': input_params["num_jobs"] } );
         pprint( r2 )
