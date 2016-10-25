@@ -25,7 +25,7 @@ does is run several "hello world" programs.
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/sean-mccorkle/ManyHellos.git"
-    GIT_COMMIT_HASH = "c0208942c3721564dca27c31a14b289e0d5e6e46"
+    GIT_COMMIT_HASH = "b80633f643bf33caa5dc1359ae4c185d0d9b90a6"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -157,6 +157,21 @@ does is run several "hello world" programs.
         # return the results
         return [res]
 
+    def hi(self, ctx):
+        """
+        :returns: instance of String
+        """
+        # ctx is the context object
+        # return variables are: returnVal
+        #BEGIN hi
+        #END hi
+
+        # At some point might do deeper type checking...
+        if not isinstance(returnVal, basestring):
+            raise ValueError('Method hi return value ' +
+                             'returnVal is not type basestring as required.')
+        # return the results
+        return [returnVal]
     def status(self, ctx):
         #BEGIN_STATUS
         returnVal = {'state': "OK",
