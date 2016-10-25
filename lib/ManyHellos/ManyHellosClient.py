@@ -15,6 +15,7 @@ try:
 except:
     # no they aren't
     from baseclient import BaseClient as _BaseClient  # @Reimport
+import time
 
 
 class ManyHellos(object):
@@ -23,15 +24,30 @@ class ManyHellos(object):
             self, url=None, timeout=30 * 60, user_id=None,
             password=None, token=None, ignore_authrc=False,
             trust_all_ssl_certificates=False,
-            auth_svc='https://kbase.us/services/authorization/Sessions/Login'):
+            auth_svc='https://kbase.us/services/authorization/Sessions/Login',
+            service_ver='beta',
+            async_job_check_time_ms=100, async_job_check_time_scale_percent=150, 
+            async_job_check_max_time_ms=300000):
         if url is None:
-            raise ValueError('A url is required')
-        self._service_ver = None
+            url = 'https://kbase.us/services/njs_wrapper'
+        #self._service_ver = service_ver
+        self._service_ver = 'beta'
         self._client = _BaseClient(
             url, timeout=timeout, user_id=user_id, password=password,
             token=token, ignore_authrc=ignore_authrc,
             trust_all_ssl_certificates=trust_all_ssl_certificates,
-            auth_svc=auth_svc)
+            auth_svc=auth_svc,
+            async_job_check_time_ms=async_job_check_time_ms,
+            async_job_check_time_scale_percent=async_job_check_time_scale_percent,
+            async_job_check_max_time_ms=async_job_check_max_time_ms)
+
+    def _check_job(self, job_id):
+        return self._client._check_job('ManyHellos', job_id)
+
+    def _manyHellos_submit(self, input_params, context=None):
+        return self._client._submit_job(
+             'ManyHellos.manyHellos', [input_params],
+             self._service_ver, context)
 
     def manyHellos(self, input_params, context=None):
         """
@@ -43,9 +59,22 @@ class ManyHellos(object):
            "njs_wrapper_url" of String, parameter "token" of String
         :returns: instance of type "ManyHellosOutputObj"
         """
-        return self._client.call_method(
-            'ManyHellos.manyHellos',
-            [input_params], self._service_ver, context)
+        job_id = self._manyHellos_submit(input_params, context)
+        async_job_check_time = self._client.async_job_check_time
+        while True:
+            time.sleep(async_job_check_time)
+            async_job_check_time = (async_job_check_time *
+                self._client.async_job_check_time_scale_percent / 100.0)
+            if async_job_check_time > self._client.async_job_check_max_time:
+                async_job_check_time = self._client.async_job_check_max_time
+            job_state = self._check_job(job_id)
+            if job_state['finished']:
+                return job_state['result'][0]
+
+    def _manyHellos_prepare_submit(self, input_params, context=None):
+        return self._client._submit_job(
+             'ManyHellos.manyHellos_prepare', [input_params],
+             self._service_ver, context)
 
     def manyHellos_prepare(self, input_params, context=None):
         """
@@ -54,9 +83,22 @@ class ManyHellos(object):
         :returns: instance of type "ManyHellos_tasklist" -> list of type
            "ManyHellos_task" -> structure: parameter "job_number" of Long
         """
-        return self._client.call_method(
-            'ManyHellos.manyHellos_prepare',
-            [input_params], self._service_ver, context)
+        job_id = self._manyHellos_prepare_submit(input_params, context)
+        async_job_check_time = self._client.async_job_check_time
+        while True:
+            time.sleep(async_job_check_time)
+            async_job_check_time = (async_job_check_time *
+                self._client.async_job_check_time_scale_percent / 100.0)
+            if async_job_check_time > self._client.async_job_check_max_time:
+                async_job_check_time = self._client.async_job_check_max_time
+            job_state = self._check_job(job_id)
+            if job_state['finished']:
+                return job_state['result'][0]
+
+    def _manyHellos_runEach_submit(self, task, context=None):
+        return self._client._submit_job(
+             'ManyHellos.manyHellos_runEach', [task],
+             self._service_ver, context)
 
     def manyHellos_runEach(self, task, context=None):
         """
@@ -64,9 +106,22 @@ class ManyHellos(object):
            parameter "job_number" of Long
         :returns: instance of type "ManyHellos_runEachResult" (runEach())
         """
-        return self._client.call_method(
-            'ManyHellos.manyHellos_runEach',
-            [task], self._service_ver, context)
+        job_id = self._manyHellos_runEach_submit(task, context)
+        async_job_check_time = self._client.async_job_check_time
+        while True:
+            time.sleep(async_job_check_time)
+            async_job_check_time = (async_job_check_time *
+                self._client.async_job_check_time_scale_percent / 100.0)
+            if async_job_check_time > self._client.async_job_check_max_time:
+                async_job_check_time = self._client.async_job_check_max_time
+            job_state = self._check_job(job_id)
+            if job_state['finished']:
+                return job_state['result'][0]
+
+    def _manyHellos_collect_submit(self, input_params, context=None):
+        return self._client._submit_job(
+             'ManyHellos.manyHellos_collect', [input_params],
+             self._service_ver, context)
 
     def manyHellos_collect(self, input_params, context=None):
         """
@@ -74,18 +129,28 @@ class ManyHellos(object):
            (collect()) -> structure: parameter "num_jobs" of Long
         :returns: instance of type "ManyHellos_collectResult"
         """
-        return self._client.call_method(
-            'ManyHellos.manyHellos_collect',
-            [input_params], self._service_ver, context)
-
-    def hi(self, context=None):
-        """
-        :returns: instance of String
-        """
-        return self._client.call_method(
-            'ManyHellos.hi',
-            [], self._service_ver, context)
+        job_id = self._manyHellos_collect_submit(input_params, context)
+        async_job_check_time = self._client.async_job_check_time
+        while True:
+            time.sleep(async_job_check_time)
+            async_job_check_time = (async_job_check_time *
+                self._client.async_job_check_time_scale_percent / 100.0)
+            if async_job_check_time > self._client.async_job_check_max_time:
+                async_job_check_time = self._client.async_job_check_max_time
+            job_state = self._check_job(job_id)
+            if job_state['finished']:
+                return job_state['result'][0]
 
     def status(self, context=None):
-        return self._client.call_method('ManyHellos.status',
-                                        [], self._service_ver, context)
+        job_id = self._client._submit_job('ManyHellos.status', 
+            [], self._service_ver, context)
+        async_job_check_time = self._client.async_job_check_time
+        while True:
+            time.sleep(async_job_check_time)
+            async_job_check_time = (async_job_check_time *
+                self._client.async_job_check_time_scale_percent / 100.0)
+            if async_job_check_time > self._client.async_job_check_max_time:
+                async_job_check_time = self._client.async_job_check_max_time
+            job_state = self._check_job(job_id)
+            if job_state['finished']:
+                return job_state['result'][0]
