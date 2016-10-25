@@ -85,18 +85,18 @@ class ManyHellosTest(unittest.TestCase):
         # self.assertEqual(ret[...], ...) or other unittest methods
         #pass
 
-    #def test_NJS_connect( self ):
-    #    print( "about to test NJS connect" )
-    #    tok = os.environ.get('KB_AUTH_TOKEN')
-    #    print( "tok is ", tok )
-    #    w = NJS( url="https://ci.kbase.us/services/njs_wrapper", token=tok )
-    #    pprint( w )
-    #    v = w.ver()
-    #    pprint( v )
-    #    s = w.status()
-    #    pprint( s )
-    #    l = w.list_config()
-    #    pprint( l )
+    def test_NJS_connect( self ):
+        print( "about to test NJS connect" )
+        tok = os.environ.get('KB_AUTH_TOKEN')
+        print( "tok is ", tok )
+        w = NJS( url="https://ci.kbase.us/services/njs_wrapper", token=tok )
+        pprint( w )
+        v = w.ver()
+        pprint( v )
+        s = w.status()
+        pprint( s )
+        l = w.list_config()
+        pprint( l )
 
 
     def test_manyHellos(self):
