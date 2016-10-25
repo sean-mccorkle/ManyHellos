@@ -11,11 +11,11 @@
     },
     "parameters": [ 
         {
-            "id": "parameter_1",
-            "optional": true,
+            "id": "said",
+            "optional": false,
             "advanced": false,
             "allow_multiple": false,
-            "default_values": [ "" ],
+            "default_values": [ "Hi~~" ],
             "field_type": "text",
             "text_options": {
                 "valid_ws_types": [ ]
@@ -26,15 +26,11 @@
         "service-mapping": {
             "url": "",
             "name": "ManyHellos",
-            "method": "manyHellos",
+            "method": "hi",
             "input_mapping": [
                 {
-                    "narrative_system_variable": "workspace",
+                    "input_parameter": "said",
                     "target_argument_position": 0
-                },
-                {
-                    "input_parameter": "parameter_1",
-                    "target_argument_position": 1
                 }
             ],
             "output_mapping": [
@@ -43,7 +39,7 @@
                     "target_property": "output"
                 },
                 {
-                    "input_parameter": "parameter_1",
+                    "input_parameter": "said",
                     "target_property": "input"
                 },
                 {
