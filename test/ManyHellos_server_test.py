@@ -15,6 +15,7 @@ from pprint import pprint  # noqa: F401
 
 from biokbase.workspace.client import Workspace as workspaceService
 from ManyHellos.ManyHellosImpl import ManyHellos
+from ManyHellos.ManyHellosClient import ManyHellos as MHC
 from ManyHellos.ManyHellosServer import MethodContext
 
 from biokbase.njs_wrapper.client import NarrativeJobService as NJS
@@ -106,23 +107,31 @@ class ManyHellosTest(unittest.TestCase):
         #
         # Run your method by
         print( "in test_manyHellos() about to run...")
+        pprint( os.environ )
+        token = os.environ.get('KB_AUTH_TOKEN')
         input_params = { 'hello_msg': "Hai",
                          'num_jobs': 3,
                          'time_limit':  5000000,
                          'njs_wrapper_url': "https://ci.kbase.us/services/njs_wrapper",
-                         'token': os.environ.get('KB_AUTH_TOKEN')
+                         'token': token
                        }
 
         ctx = self.getContext()
+        print( "ctx is " )
+        pprint( ctx )
+        callbackURL = os.environ['SDK_CALLBACK_URL']
+        print( "callbackURL is ", callbackURL )
         # NOTE - this is not right - should call a constructor that is used for further methods
         #ret = self.getImpl().manyHellos( self.getContext(), input_params )
-        print( "about to construct..." )
-        mh = ManyHellos( None )
+        print( "about to initiate ManyHellos() class .." )
+        mh = MHC( url=callbackURL, token=token )
         pprint( mh )
-        ret = mh.manyHellos( ctx, input_params )
+        #ret = mh.manyHellos( ctx, input_params )
+        ret = mh.manyHellos( input_params )    #, context=ctx )
         print( ret )
 
-        tasks_ret = mh.manyHellos_prepare( ctx, { 'num_jobs': input_params["num_jobs"] } );
+        #tasks_ret = mh.manyHellos_prepare( ctx, { 'num_jobs': input_params["num_jobs"] } );
+        tasks_ret = mh.manyHellos_prepare( { 'num_jobs': input_params["num_jobs"] } )#  , context=ctx )
         print( "back in test_manyHellos")
         tasks = tasks_ret[0]
         pprint( tasks )
@@ -138,7 +147,8 @@ class ManyHellosTest(unittest.TestCase):
             print( "job_id", jobid )
 
 
-        r2 = mh.manyHellos_collect( ctx, { 'num_jobs': input_params["num_jobs"] } );
+        #r2 = mh.manyHellos_collect( ctx, { 'num_jobs': input_params["num_jobs"] } );
+        r2 = mh.manyHellos_collect( { 'num_jobs': input_params["num_jobs"] } )  #, context=ctx );
         pprint( r2 )
 
         #
