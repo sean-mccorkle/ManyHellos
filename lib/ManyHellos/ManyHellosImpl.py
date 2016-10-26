@@ -165,7 +165,7 @@ does is run several "hello world" programs.
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN hi
-	returnVal = "Hi~~"
+        returnVal = "Hi~~"
         #END hi
 
         # At some point might do deeper type checking...
