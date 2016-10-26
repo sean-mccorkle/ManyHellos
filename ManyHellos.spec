@@ -20,7 +20,6 @@ module ManyHellos {
     typedef structure {
         string  hello_msg;
         int     time_limit;
-        string  njs_wrapper_url;
         string  token;
     } ManyHellosInputParams;
 

@@ -124,7 +124,7 @@ class ManyHellosTest(unittest.TestCase):
         # NOTE - this is not right - should call a constructor that is used for further methods
         #ret = self.getImpl().manyHellos( self.getContext(), input_params )
         print( "about to initiate ManyHellos() class .." )
-        mh = MHC( url=callbackURL, token=token , service_ver = "beta")
+        mh = MHC( url=callbackURL, token=token, service_ver = "beta" )
         pprint( mh )
         #ret = mh.manyHellos( ctx, input_params )
         ret = mh.manyHellos( input_params )    #, context=ctx )
