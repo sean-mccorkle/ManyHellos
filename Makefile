@@ -21,16 +21,13 @@ compile:
 	kb-sdk compile $(SPEC_FILE) \
 		--out $(LIB_DIR) \
 		--plclname $(SERVICE_CAPS)::$(SERVICE_CAPS)Client \
+		--pyclname $(SERVICE_CAPS).$(SERVICE_CAPS)Client \
 		--jsclname javascript/Client \
 		--javasrc src \
 		--java \
 		--pysrvname $(SERVICE_CAPS).$(SERVICE_CAPS)Server \
 		--pyimplname $(SERVICE_CAPS).$(SERVICE_CAPS)Impl;
 
-#		--pyclname $(SERVICE_CAPS).$(SERVICE_CAPS)Client \
-k		
-	# clean up temporary fix
-	rm lib/*.py
 
 build:
 	chmod +x $(SCRIPTS_DIR)/entrypoint.sh

@@ -26,7 +26,7 @@ module ManyHellos {
 
     typedef string ManyHellosOutputObj;
 
-    funcdef  manyHellos( ManyHellosInputParams input_params) returns ( ManyHellosOutputObj output_obj ) authentication required;
+    async funcdef  manyHellos( ManyHellosInputParams input_params) returns ( ManyHellosOutputObj output_obj ) authentication required;
 
     /* prepare() */
 
@@ -40,13 +40,13 @@ module ManyHellos {
 
     typedef  list<ManyHellos_task>  ManyHellos_tasklist;
 
-    funcdef  manyHellos_prepare( ManyHellos_prepareInputParams input_params ) returns ( ManyHellos_tasklist tasks ) authentication required;
+    async funcdef  manyHellos_prepare( ManyHellos_prepareInputParams input_params ) returns ( ManyHellos_tasklist tasks ) authentication required;
 
     /* runEach() */
 
     typedef  string  ManyHellos_runEachResult;
 
-    funcdef  manyHellos_runEach( ManyHellos_task task )  returns ( ManyHellos_runEachResult res ) authentication required;
+    async funcdef  manyHellos_runEach( ManyHellos_task task )  returns ( ManyHellos_runEachResult res ) authentication required;
 
     /* collect() */
 
@@ -56,8 +56,8 @@ module ManyHellos {
 
     typedef  string  ManyHellos_collectResult;
 
-    funcdef  manyHellos_collect( ManyHellos_collectInputParams input_params ) returns ( ManyHellos_collectResult res ) authentication required;
+    async funcdef  manyHellos_collect( ManyHellos_collectInputParams input_params ) returns ( ManyHellos_collectResult res ) authentication required;
 
-    funcdef  hi(string said) returns (string);
+    async funcdef  hi(string said) returns (string) authentication required;
 
 };

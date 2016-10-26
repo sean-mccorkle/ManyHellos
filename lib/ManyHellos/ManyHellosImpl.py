@@ -25,7 +25,7 @@ does is run several "hello world" programs.
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/sean-mccorkle/ManyHellos"
-    GIT_COMMIT_HASH = "472e30894078e653d42819b301e6edf674259f58"
+    GIT_COMMIT_HASH = "c96272af9eeb84ea7b8ea4c288654402d5c85237"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
