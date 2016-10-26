@@ -24,8 +24,8 @@ does is run several "hello world" programs.
     # the latter method is running.
     ######################################### noqa
     VERSION = "0.0.1"
-    GIT_URL = "https://github.com/sean-mccorkle/ManyHellos.git"
-    GIT_COMMIT_HASH = "b80633f643bf33caa5dc1359ae4c185d0d9b90a6"
+    GIT_URL = "https://github.com/sean-mccorkle/ManyHellos"
+    GIT_COMMIT_HASH = "472e30894078e653d42819b301e6edf674259f58"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -157,8 +157,9 @@ does is run several "hello world" programs.
         # return the results
         return [res]
 
-    def hi(self, ctx):
+    def hi(self, ctx, said):
         """
+        :param said: instance of String
         :returns: instance of String
         """
         # ctx is the context object
