@@ -21,13 +21,34 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "num_jobs"
+    "msg",
+    "num_jobs",
+    "workspace"
 })
 public class ManyHellosPrepareInputParams {
 
+    @JsonProperty("msg")
+    private String msg;
     @JsonProperty("num_jobs")
     private Long numJobs;
+    @JsonProperty("workspace")
+    private String workspace;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+    @JsonProperty("msg")
+    public String getMsg() {
+        return msg;
+    }
+
+    @JsonProperty("msg")
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public ManyHellosPrepareInputParams withMsg(String msg) {
+        this.msg = msg;
+        return this;
+    }
 
     @JsonProperty("num_jobs")
     public Long getNumJobs() {
@@ -44,6 +65,21 @@ public class ManyHellosPrepareInputParams {
         return this;
     }
 
+    @JsonProperty("workspace")
+    public String getWorkspace() {
+        return workspace;
+    }
+
+    @JsonProperty("workspace")
+    public void setWorkspace(String workspace) {
+        this.workspace = workspace;
+    }
+
+    public ManyHellosPrepareInputParams withWorkspace(String workspace) {
+        this.workspace = workspace;
+        return this;
+    }
+
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -56,7 +92,7 @@ public class ManyHellosPrepareInputParams {
 
     @Override
     public String toString() {
-        return ((((("ManyHellosPrepareInputParams"+" [numJobs=")+ numJobs)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((("ManyHellosPrepareInputParams"+" [msg=")+ msg)+", numJobs=")+ numJobs)+", workspace=")+ workspace)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

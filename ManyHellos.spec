@@ -30,16 +30,20 @@ module ManyHellos {
     /* prepare() */
 
     typedef structure {
+        string  msg;
         int     num_jobs;
+        string  workspace;
     } ManyHellos_prepareInputParams;
 
     typedef  structure {
+        string msg;
         int  job_number;
+        string  workspace;
     } ManyHellos_task;
 
     typedef  list<ManyHellos_task>  ManyHellos_tasklist;
 
-    async funcdef  manyHellos_prepare( ManyHellos_prepareInputParams input_params ) returns ( ManyHellos_tasklist tasks ) authentication required;
+    funcdef  manyHellos_prepare( ManyHellos_prepareInputParams input_params ) returns ( ManyHellos_tasklist tasks ) authentication required;
 
     /* runEach() */
 
@@ -55,7 +59,7 @@ module ManyHellos {
 
     typedef  string  ManyHellos_collectResult;
 
-    async funcdef  manyHellos_collect( ManyHellos_collectInputParams input_params ) returns ( ManyHellos_collectResult res ) authentication required;
+    funcdef  manyHellos_collect( ManyHellos_collectInputParams input_params ) returns ( ManyHellos_collectResult res ) authentication required;
 
     async funcdef  hi(string said) returns (string) authentication required;
 

@@ -131,7 +131,7 @@ class ManyHellosTest(unittest.TestCase):
         print( ret )
 
         #tasks_ret = mh.manyHellos_prepare( ctx, { 'num_jobs': input_params["num_jobs"] } );
-        tasks_ret = mh.manyHellos_prepare( { 'num_jobs': input_params["num_jobs"] } )#  , context=ctx )
+        tasks_ret = mh.manyHellos_prepare( { 'msg' : "Hello", 'num_jobs': input_params["num_jobs"] , 'workspace' : 'sjyoo:1440535806637'} )#  , context=ctx )
         print( "back in test_manyHellos")
         tasks = tasks_ret[0]
         pprint( tasks )

@@ -19,13 +19,34 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "job_number"
+    "msg",
+    "job_number",
+    "workspace"
 })
 public class ManyHellosTask {
 
+    @JsonProperty("msg")
+    private String msg;
     @JsonProperty("job_number")
     private Long jobNumber;
+    @JsonProperty("workspace")
+    private String workspace;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
+    @JsonProperty("msg")
+    public String getMsg() {
+        return msg;
+    }
+
+    @JsonProperty("msg")
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public ManyHellosTask withMsg(String msg) {
+        this.msg = msg;
+        return this;
+    }
 
     @JsonProperty("job_number")
     public Long getJobNumber() {
@@ -42,6 +63,21 @@ public class ManyHellosTask {
         return this;
     }
 
+    @JsonProperty("workspace")
+    public String getWorkspace() {
+        return workspace;
+    }
+
+    @JsonProperty("workspace")
+    public void setWorkspace(String workspace) {
+        this.workspace = workspace;
+    }
+
+    public ManyHellosTask withWorkspace(String workspace) {
+        this.workspace = workspace;
+        return this;
+    }
+
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -54,7 +90,7 @@ public class ManyHellosTask {
 
     @Override
     public String toString() {
-        return ((((("ManyHellosTask"+" [jobNumber=")+ jobNumber)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((("ManyHellosTask"+" [msg=")+ msg)+", jobNumber=")+ jobNumber)+", workspace=")+ workspace)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

@@ -24,7 +24,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
     "hello_msg",
     "time_limit",
-    "njs_wrapper_url",
     "token"
 })
 public class ManyHellosInputParams {
@@ -33,8 +32,6 @@ public class ManyHellosInputParams {
     private String helloMsg;
     @JsonProperty("time_limit")
     private Long timeLimit;
-    @JsonProperty("njs_wrapper_url")
-    private String njsWrapperUrl;
     @JsonProperty("token")
     private String token;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
@@ -69,21 +66,6 @@ public class ManyHellosInputParams {
         return this;
     }
 
-    @JsonProperty("njs_wrapper_url")
-    public String getNjsWrapperUrl() {
-        return njsWrapperUrl;
-    }
-
-    @JsonProperty("njs_wrapper_url")
-    public void setNjsWrapperUrl(String njsWrapperUrl) {
-        this.njsWrapperUrl = njsWrapperUrl;
-    }
-
-    public ManyHellosInputParams withNjsWrapperUrl(String njsWrapperUrl) {
-        this.njsWrapperUrl = njsWrapperUrl;
-        return this;
-    }
-
     @JsonProperty("token")
     public String getToken() {
         return token;
@@ -111,7 +93,7 @@ public class ManyHellosInputParams {
 
     @Override
     public String toString() {
-        return ((((((((((("ManyHellosInputParams"+" [helloMsg=")+ helloMsg)+", timeLimit=")+ timeLimit)+", njsWrapperUrl=")+ njsWrapperUrl)+", token=")+ token)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((("ManyHellosInputParams"+" [helloMsg=")+ helloMsg)+", timeLimit=")+ timeLimit)+", token=")+ token)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

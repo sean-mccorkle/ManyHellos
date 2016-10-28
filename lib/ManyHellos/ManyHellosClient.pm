@@ -6,6 +6,7 @@ use strict;
 use Data::Dumper;
 use URI;
 use Bio::KBase::Exceptions;
+use Time::HiRes;
 my $get_time = sub { time, 0 };
 eval {
     require Time::HiRes;
@@ -42,6 +43,24 @@ sub new
 	url => $url,
 	headers => [],
     };
+    my %arg_hash = @args;
+    $self->{async_job_check_time} = 0.1;
+    if (exists $arg_hash{"async_job_check_time_ms"}) {
+        $self->{async_job_check_time} = $arg_hash{"async_job_check_time_ms"} / 1000.0;
+    }
+    $self->{async_job_check_time_scale_percent} = 150;
+    if (exists $arg_hash{"async_job_check_time_scale_percent"}) {
+        $self->{async_job_check_time_scale_percent} = $arg_hash{"async_job_check_time_scale_percent"};
+    }
+    $self->{async_job_check_max_time} = 300;  # 5 minutes
+    if (exists $arg_hash{"async_job_check_max_time_ms"}) {
+        $self->{async_job_check_max_time} = $arg_hash{"async_job_check_max_time_ms"} / 1000.0;
+    }
+    my $service_version = undef;
+    if (exists $arg_hash{"service_version"}) {
+        $service_version = $arg_hash{"async_version"};
+    }
+    $self->{service_version} = $service_version;
 
     chomp($self->{hostname} = `hostname`);
     $self->{hostname} ||= 'unknown-host';
@@ -89,6 +108,14 @@ sub new
 	    $self->{token} = $token->token;
 	    $self->{client}->{token} = $token->token;
 	}
+        else
+        {
+	    #
+	    # All methods in this module require authentication. In this case, if we
+	    # don't have a token, we can't continue.
+	    #
+	    die "Authentication failed: " . $token->error_message;
+	}
     }
 
     my $ua = $self->{client}->ua;	 
@@ -97,6 +124,43 @@ sub new
     bless $self, $class;
     #    $self->_validate_version();
     return $self;
+}
+
+sub _check_job {
+    my($self, @args) = @_;
+# Authentication: ${method.authentication}
+    if ((my $n = @args) != 1) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+                                   "Invalid argument count for function _check_job (received $n, expecting 1)");
+    }
+    {
+        my($job_id) = @args;
+        my @_bad_arguments;
+        (!ref($job_id)) or push(@_bad_arguments, "Invalid type for argument 0 \"job_id\" (it should be a string)");
+        if (@_bad_arguments) {
+            my $msg = "Invalid arguments passed to _check_job:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+            Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+                                   method_name => '_check_job');
+        }
+    }
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+        method => "ManyHellos._check_job",
+        params => \@args});
+    if ($result) {
+        if ($result->is_error) {
+            Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+                           code => $result->content->{error}->{code},
+                           method_name => '_check_job',
+                           data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+                          );
+        } else {
+            return $result->result->[0];
+        }
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method _check_job",
+                        status_line => $self->{client}->status_line,
+                        method_name => '_check_job');
+    }
 }
 
 
@@ -118,7 +182,6 @@ $output_obj is a ManyHellos.ManyHellosOutputObj
 ManyHellosInputParams is a reference to a hash where the following keys are defined:
 	hello_msg has a value which is a string
 	time_limit has a value which is an int
-	njs_wrapper_url has a value which is a string
 	token has a value which is a string
 ManyHellosOutputObj is a string
 
@@ -133,7 +196,6 @@ $output_obj is a ManyHellos.ManyHellosOutputObj
 ManyHellosInputParams is a reference to a hash where the following keys are defined:
 	hello_msg has a value which is a string
 	time_limit has a value which is an int
-	njs_wrapper_url has a value which is a string
 	token has a value which is a string
 ManyHellosOutputObj is a string
 
@@ -148,51 +210,68 @@ ManyHellosOutputObj is a string
 
 =cut
 
- sub manyHellos
+sub manyHellos
 {
     my($self, @args) = @_;
-
-# Authentication: required
-
-    if ((my $n = @args) != 1)
-    {
-	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function manyHellos (received $n, expecting 1)");
-    }
-    {
-	my($input_params) = @args;
-
-	my @_bad_arguments;
-        (ref($input_params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"input_params\" (value was \"$input_params\")");
-        if (@_bad_arguments) {
-	    my $msg = "Invalid arguments passed to manyHellos:\n" . join("", map { "\t$_\n" } @_bad_arguments);
-	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-								   method_name => 'manyHellos');
-	}
-    }
-
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "ManyHellos.manyHellos",
-	    params => \@args,
-    });
-    if ($result) {
-	if ($result->is_error) {
-	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
-					       code => $result->content->{error}->{code},
-					       method_name => 'manyHellos',
-					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
-					      );
-	} else {
-	    return wantarray ? @{$result->result} : $result->result->[0];
-	}
-    } else {
-        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method manyHellos",
-					    status_line => $self->{client}->status_line,
-					    method_name => 'manyHellos',
-				       );
+    my $job_id = $self->_manyHellos_submit(@args);
+    my $async_job_check_time = $self->{async_job_check_time};
+    while (1) {
+        Time::HiRes::sleep($async_job_check_time);
+        $async_job_check_time *= $self->{async_job_check_time_scale_percent} / 100.0;
+        if ($async_job_check_time > $self->{async_job_check_max_time}) {
+            $async_job_check_time = $self->{async_job_check_max_time};
+        }
+        my $job_state_ref = $self->_check_job($job_id);
+        if ($job_state_ref->{"finished"} != 0) {
+            if (!exists $job_state_ref->{"result"}) {
+                $job_state_ref->{"result"} = [];
+            }
+            return wantarray ? @{$job_state_ref->{"result"}} : $job_state_ref->{"result"}->[0];
+        }
     }
 }
+
+sub _manyHellos_submit {
+    my($self, @args) = @_;
+# Authentication: required
+    if ((my $n = @args) != 1) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+                                   "Invalid argument count for function _manyHellos_submit (received $n, expecting 1)");
+    }
+    {
+        my($input_params) = @args;
+        my @_bad_arguments;
+        (ref($input_params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"input_params\" (value was \"$input_params\")");
+        if (@_bad_arguments) {
+            my $msg = "Invalid arguments passed to _manyHellos_submit:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+            Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+                                   method_name => '_manyHellos_submit');
+        }
+    }
+    my $context = undef;
+    if ($self->{service_version}) {
+        $context = {'service_ver' => $self->{service_version}};
+    }
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+        method => "ManyHellos._manyHellos_submit",
+        params => \@args}, context => $context);
+    if ($result) {
+        if ($result->is_error) {
+            Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+                           code => $result->content->{error}->{code},
+                           method_name => '_manyHellos_submit',
+                           data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+            );
+        } else {
+            return $result->result->[0];  # job_id
+        }
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method _manyHellos_submit",
+                        status_line => $self->{client}->status_line,
+                        method_name => '_manyHellos_submit');
+    }
+}
+
  
 
 
@@ -210,10 +289,14 @@ ManyHellosOutputObj is a string
 $input_params is a ManyHellos.ManyHellos_prepareInputParams
 $tasks is a ManyHellos.ManyHellos_tasklist
 ManyHellos_prepareInputParams is a reference to a hash where the following keys are defined:
+	msg has a value which is a string
 	num_jobs has a value which is an int
+	workspace has a value which is a string
 ManyHellos_tasklist is a reference to a list where each element is a ManyHellos.ManyHellos_task
 ManyHellos_task is a reference to a hash where the following keys are defined:
+	msg has a value which is a string
 	job_number has a value which is an int
+	workspace has a value which is a string
 
 </pre>
 
@@ -224,10 +307,14 @@ ManyHellos_task is a reference to a hash where the following keys are defined:
 $input_params is a ManyHellos.ManyHellos_prepareInputParams
 $tasks is a ManyHellos.ManyHellos_tasklist
 ManyHellos_prepareInputParams is a reference to a hash where the following keys are defined:
+	msg has a value which is a string
 	num_jobs has a value which is an int
+	workspace has a value which is a string
 ManyHellos_tasklist is a reference to a list where each element is a ManyHellos.ManyHellos_task
 ManyHellos_task is a reference to a hash where the following keys are defined:
+	msg has a value which is a string
 	job_number has a value which is an int
+	workspace has a value which is a string
 
 
 =end text
@@ -302,7 +389,9 @@ ManyHellos_task is a reference to a hash where the following keys are defined:
 $task is a ManyHellos.ManyHellos_task
 $res is a ManyHellos.ManyHellos_runEachResult
 ManyHellos_task is a reference to a hash where the following keys are defined:
+	msg has a value which is a string
 	job_number has a value which is an int
+	workspace has a value which is a string
 ManyHellos_runEachResult is a string
 
 </pre>
@@ -314,7 +403,9 @@ ManyHellos_runEachResult is a string
 $task is a ManyHellos.ManyHellos_task
 $res is a ManyHellos.ManyHellos_runEachResult
 ManyHellos_task is a reference to a hash where the following keys are defined:
+	msg has a value which is a string
 	job_number has a value which is an int
+	workspace has a value which is a string
 ManyHellos_runEachResult is a string
 
 
@@ -328,51 +419,68 @@ ManyHellos_runEachResult is a string
 
 =cut
 
- sub manyHellos_runEach
+sub manyHellos_runEach
 {
     my($self, @args) = @_;
-
-# Authentication: required
-
-    if ((my $n = @args) != 1)
-    {
-	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function manyHellos_runEach (received $n, expecting 1)");
-    }
-    {
-	my($task) = @args;
-
-	my @_bad_arguments;
-        (ref($task) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"task\" (value was \"$task\")");
-        if (@_bad_arguments) {
-	    my $msg = "Invalid arguments passed to manyHellos_runEach:\n" . join("", map { "\t$_\n" } @_bad_arguments);
-	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-								   method_name => 'manyHellos_runEach');
-	}
-    }
-
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "ManyHellos.manyHellos_runEach",
-	    params => \@args,
-    });
-    if ($result) {
-	if ($result->is_error) {
-	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
-					       code => $result->content->{error}->{code},
-					       method_name => 'manyHellos_runEach',
-					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
-					      );
-	} else {
-	    return wantarray ? @{$result->result} : $result->result->[0];
-	}
-    } else {
-        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method manyHellos_runEach",
-					    status_line => $self->{client}->status_line,
-					    method_name => 'manyHellos_runEach',
-				       );
+    my $job_id = $self->_manyHellos_runEach_submit(@args);
+    my $async_job_check_time = $self->{async_job_check_time};
+    while (1) {
+        Time::HiRes::sleep($async_job_check_time);
+        $async_job_check_time *= $self->{async_job_check_time_scale_percent} / 100.0;
+        if ($async_job_check_time > $self->{async_job_check_max_time}) {
+            $async_job_check_time = $self->{async_job_check_max_time};
+        }
+        my $job_state_ref = $self->_check_job($job_id);
+        if ($job_state_ref->{"finished"} != 0) {
+            if (!exists $job_state_ref->{"result"}) {
+                $job_state_ref->{"result"} = [];
+            }
+            return wantarray ? @{$job_state_ref->{"result"}} : $job_state_ref->{"result"}->[0];
+        }
     }
 }
+
+sub _manyHellos_runEach_submit {
+    my($self, @args) = @_;
+# Authentication: required
+    if ((my $n = @args) != 1) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+                                   "Invalid argument count for function _manyHellos_runEach_submit (received $n, expecting 1)");
+    }
+    {
+        my($task) = @args;
+        my @_bad_arguments;
+        (ref($task) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"task\" (value was \"$task\")");
+        if (@_bad_arguments) {
+            my $msg = "Invalid arguments passed to _manyHellos_runEach_submit:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+            Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+                                   method_name => '_manyHellos_runEach_submit');
+        }
+    }
+    my $context = undef;
+    if ($self->{service_version}) {
+        $context = {'service_ver' => $self->{service_version}};
+    }
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+        method => "ManyHellos._manyHellos_runEach_submit",
+        params => \@args}, context => $context);
+    if ($result) {
+        if ($result->is_error) {
+            Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+                           code => $result->content->{error}->{code},
+                           method_name => '_manyHellos_runEach_submit',
+                           data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+            );
+        } else {
+            return $result->result->[0];  # job_id
+        }
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method _manyHellos_runEach_submit",
+                        status_line => $self->{client}->status_line,
+                        method_name => '_manyHellos_runEach_submit');
+    }
+}
+
  
 
 
@@ -466,7 +574,7 @@ ManyHellos_collectResult is a string
 
 =head2 hi
 
-  $return = $obj->hi()
+  $return = $obj->hi($said)
 
 =over 4
 
@@ -475,6 +583,7 @@ ManyHellos_collectResult is a string
 =begin html
 
 <pre>
+$said is a string
 $return is a string
 
 </pre>
@@ -483,6 +592,7 @@ $return is a string
 
 =begin text
 
+$said is a string
 $return is a string
 
 
@@ -496,40 +606,167 @@ $return is a string
 
 =cut
 
- sub hi
+sub hi
 {
     my($self, @args) = @_;
-
-# Authentication: none
-
-    if ((my $n = @args) != 0)
-    {
-	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function hi (received $n, expecting 0)");
-    }
-
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "ManyHellos.hi",
-	    params => \@args,
-    });
-    if ($result) {
-	if ($result->is_error) {
-	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
-					       code => $result->content->{error}->{code},
-					       method_name => 'hi',
-					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
-					      );
-	} else {
-	    return wantarray ? @{$result->result} : $result->result->[0];
-	}
-    } else {
-        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method hi",
-					    status_line => $self->{client}->status_line,
-					    method_name => 'hi',
-				       );
+    my $job_id = $self->_hi_submit(@args);
+    my $async_job_check_time = $self->{async_job_check_time};
+    while (1) {
+        Time::HiRes::sleep($async_job_check_time);
+        $async_job_check_time *= $self->{async_job_check_time_scale_percent} / 100.0;
+        if ($async_job_check_time > $self->{async_job_check_max_time}) {
+            $async_job_check_time = $self->{async_job_check_max_time};
+        }
+        my $job_state_ref = $self->_check_job($job_id);
+        if ($job_state_ref->{"finished"} != 0) {
+            if (!exists $job_state_ref->{"result"}) {
+                $job_state_ref->{"result"} = [];
+            }
+            return wantarray ? @{$job_state_ref->{"result"}} : $job_state_ref->{"result"}->[0];
+        }
     }
 }
+
+sub _hi_submit {
+    my($self, @args) = @_;
+# Authentication: required
+    if ((my $n = @args) != 1) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+                                   "Invalid argument count for function _hi_submit (received $n, expecting 1)");
+    }
+    {
+        my($said) = @args;
+        my @_bad_arguments;
+        (!ref($said)) or push(@_bad_arguments, "Invalid type for argument 1 \"said\" (value was \"$said\")");
+        if (@_bad_arguments) {
+            my $msg = "Invalid arguments passed to _hi_submit:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+            Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+                                   method_name => '_hi_submit');
+        }
+    }
+    my $context = undef;
+    if ($self->{service_version}) {
+        $context = {'service_ver' => $self->{service_version}};
+    }
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+        method => "ManyHellos._hi_submit",
+        params => \@args}, context => $context);
+    if ($result) {
+        if ($result->is_error) {
+            Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+                           code => $result->content->{error}->{code},
+                           method_name => '_hi_submit',
+                           data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+            );
+        } else {
+            return $result->result->[0];  # job_id
+        }
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method _hi_submit",
+                        status_line => $self->{client}->status_line,
+                        method_name => '_hi_submit');
+    }
+}
+
+ 
+
+
+=head2 run_narrative
+
+  $return = $obj->run_narrative($said)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$said is a string
+$return is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$said is a string
+$return is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+sub run_narrative
+{
+    my($self, @args) = @_;
+    my $job_id = $self->_run_narrative_submit(@args);
+    my $async_job_check_time = $self->{async_job_check_time};
+    while (1) {
+        Time::HiRes::sleep($async_job_check_time);
+        $async_job_check_time *= $self->{async_job_check_time_scale_percent} / 100.0;
+        if ($async_job_check_time > $self->{async_job_check_max_time}) {
+            $async_job_check_time = $self->{async_job_check_max_time};
+        }
+        my $job_state_ref = $self->_check_job($job_id);
+        if ($job_state_ref->{"finished"} != 0) {
+            if (!exists $job_state_ref->{"result"}) {
+                $job_state_ref->{"result"} = [];
+            }
+            return wantarray ? @{$job_state_ref->{"result"}} : $job_state_ref->{"result"}->[0];
+        }
+    }
+}
+
+sub _run_narrative_submit {
+    my($self, @args) = @_;
+# Authentication: required
+    if ((my $n = @args) != 1) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+                                   "Invalid argument count for function _run_narrative_submit (received $n, expecting 1)");
+    }
+    {
+        my($said) = @args;
+        my @_bad_arguments;
+        (!ref($said)) or push(@_bad_arguments, "Invalid type for argument 1 \"said\" (value was \"$said\")");
+        if (@_bad_arguments) {
+            my $msg = "Invalid arguments passed to _run_narrative_submit:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+            Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+                                   method_name => '_run_narrative_submit');
+        }
+    }
+    my $context = undef;
+    if ($self->{service_version}) {
+        $context = {'service_ver' => $self->{service_version}};
+    }
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+        method => "ManyHellos._run_narrative_submit",
+        params => \@args}, context => $context);
+    if ($result) {
+        if ($result->is_error) {
+            Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+                           code => $result->content->{error}->{code},
+                           method_name => '_run_narrative_submit',
+                           data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+            );
+        } else {
+            return $result->result->[0];  # job_id
+        }
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method _run_narrative_submit",
+                        status_line => $self->{client}->status_line,
+                        method_name => '_run_narrative_submit');
+    }
+}
+
  
   
 sub status
@@ -574,16 +811,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'hi',
+                method_name => 'run_narrative',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method hi",
+            error => "Error invoking method run_narrative",
             status_line => $self->{client}->status_line,
-            method_name => 'hi',
+            method_name => 'run_narrative',
         );
     }
 }
@@ -640,7 +877,6 @@ should probably be in the constructor?   maybe manyHellos_prepare()
 a reference to a hash where the following keys are defined:
 hello_msg has a value which is a string
 time_limit has a value which is an int
-njs_wrapper_url has a value which is a string
 token has a value which is a string
 
 </pre>
@@ -652,7 +888,6 @@ token has a value which is a string
 a reference to a hash where the following keys are defined:
 hello_msg has a value which is a string
 time_limit has a value which is an int
-njs_wrapper_url has a value which is a string
 token has a value which is a string
 
 
@@ -705,7 +940,9 @@ prepare()
 
 <pre>
 a reference to a hash where the following keys are defined:
+msg has a value which is a string
 num_jobs has a value which is an int
+workspace has a value which is a string
 
 </pre>
 
@@ -714,7 +951,9 @@ num_jobs has a value which is an int
 =begin text
 
 a reference to a hash where the following keys are defined:
+msg has a value which is a string
 num_jobs has a value which is an int
+workspace has a value which is a string
 
 
 =end text
@@ -735,7 +974,9 @@ num_jobs has a value which is an int
 
 <pre>
 a reference to a hash where the following keys are defined:
+msg has a value which is a string
 job_number has a value which is an int
+workspace has a value which is a string
 
 </pre>
 
@@ -744,7 +985,9 @@ job_number has a value which is an int
 =begin text
 
 a reference to a hash where the following keys are defined:
+msg has a value which is a string
 job_number has a value which is an int
+workspace has a value which is a string
 
 
 =end text

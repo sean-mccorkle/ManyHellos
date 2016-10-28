@@ -3,6 +3,7 @@
 
 from pprint import pprint 
 from biokbase.njs_wrapper.client import NarrativeJobService as NJS
+from biokbase.workspace.client import Workspace
 
 #END_HEADER
 
@@ -25,7 +26,7 @@ does is run several "hello world" programs.
     ######################################### noqa
     VERSION = "0.0.1"
     GIT_URL = "https://github.com/sean-mccorkle/ManyHellos"
-    GIT_COMMIT_HASH = "c96272af9eeb84ea7b8ea4c288654402d5c85237"
+    GIT_COMMIT_HASH = "1374eaf09aa41031df00ba1470640f535cf2ad48"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -34,9 +35,12 @@ does is run several "hello world" programs.
     # be found
     def __init__(self, config):
         #BEGIN_CONSTRUCTOR
-        main_message = ""
-        number_of_jobs = 0
-        time_limit = 0
+        self.main_message = ""
+        self.number_of_jobs = 0
+        self.time_limit = 0
+ 
+        self.config = config
+        
         #END_CONSTRUCTOR
         pass
 
@@ -47,8 +51,7 @@ does is run several "hello world" programs.
            the main service call manyHellos(), now Im not sure what this does
            - initializes, but that should probably be in the constructor?  
            maybe manyHellos_prepare()) -> structure: parameter "hello_msg" of
-           String, parameter "time_limit" of Long, parameter
-           "njs_wrapper_url" of String, parameter "token" of String
+           String, parameter "time_limit" of Long, parameter "token" of String
         :returns: instance of type "ManyHellosOutputObj"
         """
         # ctx is the context object
@@ -80,9 +83,11 @@ does is run several "hello world" programs.
     def manyHellos_prepare(self, ctx, input_params):
         """
         :param input_params: instance of type "ManyHellos_prepareInputParams"
-           (prepare()) -> structure: parameter "num_jobs" of Long
+           (prepare()) -> structure: parameter "msg" of String, parameter
+           "num_jobs" of Long, parameter "workspace" of String
         :returns: instance of type "ManyHellos_tasklist" -> list of type
-           "ManyHellos_task" -> structure: parameter "job_number" of Long
+           "ManyHellos_task" -> structure: parameter "msg" of String,
+           parameter "job_number" of Long, parameter "workspace" of String
         """
         # ctx is the context object
         # return variables are: tasks
@@ -94,7 +99,7 @@ does is run several "hello world" programs.
 
         tasks = []
         for i in range( self.num_jobs ):
-            tasks.append( { 'job_number': i } )
+            tasks.append( { 'msg': input_params['msg'], 'job_number': i , 'workspace' : input_params['workspace']} )
 
         pprint( ["exiting manyHellos_prepare, tasks is", tasks] )
 
@@ -110,7 +115,8 @@ does is run several "hello world" programs.
     def manyHellos_runEach(self, ctx, task):
         """
         :param task: instance of type "ManyHellos_task" -> structure:
-           parameter "job_number" of Long
+           parameter "msg" of String, parameter "job_number" of Long,
+           parameter "workspace" of String
         :returns: instance of type "ManyHellos_runEachResult" (runEach())
         """
         # ctx is the context object
@@ -119,9 +125,24 @@ does is run several "hello world" programs.
         print( "this is manyHellos_runEach..." )
         pprint( [ "task is ", task] )
 
-        res = "default manyHellos_runEach() result"
+        res = "{0}: {1}".format(task['job_number'], task['msg'])
 
         print( "exiting manyHellos_runEach(), res is", res )
+
+        ws_client=Workspace(url=self.config['workspace-url'], token=ctx['token'])
+	res= ws_client.save_objects(
+                            {"workspace":task['workspace'],
+                             "objects": [{
+                                            'type':'KBaseReport.Report',
+                                            "data":{'objects_created':[], 'text_message': res },
+                                            "name":"{0}_{1}.rpt".format(task['msg'],task['job_number']),
+                                            "meta" : {}
+                                        
+	    				}]
+                            })
+
+
+
         #END manyHellos_runEach
 
         # At some point might do deeper type checking...
@@ -171,6 +192,23 @@ does is run several "hello world" programs.
         # At some point might do deeper type checking...
         if not isinstance(returnVal, basestring):
             raise ValueError('Method hi return value ' +
+                             'returnVal is not type basestring as required.')
+        # return the results
+        return [returnVal]
+
+    def run_narrative(self, ctx, said):
+        """
+        :param said: instance of String
+        :returns: instance of String
+        """
+        # ctx is the context object
+        # return variables are: returnVal
+        #BEGIN run_narrative
+        #END run_narrative
+
+        # At some point might do deeper type checking...
+        if not isinstance(returnVal, basestring):
+            raise ValueError('Method run_narrative return value ' +
                              'returnVal is not type basestring as required.')
         # return the results
         return [returnVal]
