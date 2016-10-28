@@ -133,7 +133,7 @@ class ManyHellosTest(unittest.TestCase):
         #tasks_ret = mh.manyHellos_prepare( ctx, { 'num_jobs': input_params["num_jobs"] } );
         tasks_ret = mh.manyHellos_prepare( { 'msg' : "Hello", 'num_jobs': input_params["num_jobs"] , 'workspace' : 'sjyoo:1440535806637'} )#  , context=ctx )
         print( "back in test_manyHellos")
-        tasks = tasks_ret[0]
+        tasks = tasks_ret
         pprint( tasks )
 
         tok = os.environ.get('KB_AUTH_TOKEN')

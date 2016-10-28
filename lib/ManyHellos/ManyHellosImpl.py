@@ -95,7 +95,7 @@ does is run several "hello world" programs.
 
         print( "this is manyHellos_prepare..." )
         print( "num_jobs is ", input_params["num_jobs"] )
-        self.num_jobs = input_params["num_jobs"];
+        self.num_jobs = int(input_params["num_jobs"]);
 
         tasks = []
         for i in range( self.num_jobs ):
