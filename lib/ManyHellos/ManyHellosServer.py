@@ -349,10 +349,6 @@ class Application(object):
                              name='ManyHellos.hi',
                              types=[basestring])
         self.method_authentication['ManyHellos.hi'] = 'required' # noqa
-        self.rpc_service.add(impl_ManyHellos.run_narrative,
-                             name='ManyHellos.run_narrative',
-                             types=[basestring])
-        self.method_authentication['ManyHellos.run_narrative'] = 'required' # noqa
         self.rpc_service.add(impl_ManyHellos.status,
                              name='ManyHellos.status',
                              types=[dict])

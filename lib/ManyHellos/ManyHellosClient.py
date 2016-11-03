@@ -138,28 +138,6 @@ class ManyHellos(object):
             if job_state['finished']:
                 return job_state['result'][0]
 
-    def _run_narrative_submit(self, said, context=None):
-        return self._client._submit_job(
-             'ManyHellos.run_narrative', [said],
-             self._service_ver, context)
-
-    def run_narrative(self, said, context=None):
-        """
-        :param said: instance of String
-        :returns: instance of String
-        """
-        job_id = self._run_narrative_submit(said, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
     def status(self, context=None):
         return self._client.call_method('ManyHellos.status',
                                         [], self._service_ver, context)

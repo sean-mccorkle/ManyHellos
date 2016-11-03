@@ -669,105 +669,6 @@ sub _hi_submit {
 }
 
  
-
-
-=head2 run_narrative
-
-  $return = $obj->run_narrative($said)
-
-=over 4
-
-=item Parameter and return types
-
-=begin html
-
-<pre>
-$said is a string
-$return is a string
-
-</pre>
-
-=end html
-
-=begin text
-
-$said is a string
-$return is a string
-
-
-=end text
-
-=item Description
-
-
-
-=back
-
-=cut
-
-sub run_narrative
-{
-    my($self, @args) = @_;
-    my $job_id = $self->_run_narrative_submit(@args);
-    my $async_job_check_time = $self->{async_job_check_time};
-    while (1) {
-        Time::HiRes::sleep($async_job_check_time);
-        $async_job_check_time *= $self->{async_job_check_time_scale_percent} / 100.0;
-        if ($async_job_check_time > $self->{async_job_check_max_time}) {
-            $async_job_check_time = $self->{async_job_check_max_time};
-        }
-        my $job_state_ref = $self->_check_job($job_id);
-        if ($job_state_ref->{"finished"} != 0) {
-            if (!exists $job_state_ref->{"result"}) {
-                $job_state_ref->{"result"} = [];
-            }
-            return wantarray ? @{$job_state_ref->{"result"}} : $job_state_ref->{"result"}->[0];
-        }
-    }
-}
-
-sub _run_narrative_submit {
-    my($self, @args) = @_;
-# Authentication: required
-    if ((my $n = @args) != 1) {
-        Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-                                   "Invalid argument count for function _run_narrative_submit (received $n, expecting 1)");
-    }
-    {
-        my($said) = @args;
-        my @_bad_arguments;
-        (!ref($said)) or push(@_bad_arguments, "Invalid type for argument 1 \"said\" (value was \"$said\")");
-        if (@_bad_arguments) {
-            my $msg = "Invalid arguments passed to _run_narrative_submit:\n" . join("", map { "\t$_\n" } @_bad_arguments);
-            Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-                                   method_name => '_run_narrative_submit');
-        }
-    }
-    my $context = undef;
-    if ($self->{service_version}) {
-        $context = {'service_ver' => $self->{service_version}};
-    }
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-        method => "ManyHellos._run_narrative_submit",
-        params => \@args}, context => $context);
-    if ($result) {
-        if ($result->is_error) {
-            Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
-                           code => $result->content->{error}->{code},
-                           method_name => '_run_narrative_submit',
-                           data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
-            );
-        } else {
-            return $result->result->[0];  # job_id
-        }
-    } else {
-        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method _run_narrative_submit",
-                        status_line => $self->{client}->status_line,
-                        method_name => '_run_narrative_submit');
-    }
-}
-
- 
   
 sub status
 {
@@ -811,16 +712,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'run_narrative',
+                method_name => 'hi',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method run_narrative",
+            error => "Error invoking method hi",
             status_line => $self->{client}->status_line,
-            method_name => 'run_narrative',
+            method_name => 'hi',
         );
     }
 }

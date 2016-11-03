@@ -367,51 +367,6 @@ public class ManyHellosClient {
         }
     }
 
-    /**
-     * <p>Original spec-file function name: run_narrative</p>
-     * <pre>
-     * </pre>
-     * @param   said   instance of String
-     * @return   instance of String
-     * @throws IOException if an IO exception occurs
-     * @throws JsonClientException if a JSON RPC exception occurs
-     */
-    protected String _runNarrativeSubmit(String said, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
-        List<Object> args = new ArrayList<Object>();
-        args.add(said);
-        TypeReference<List<String>> retType = new TypeReference<List<String>>() {};
-        List<String> res = caller.jsonrpcCall("ManyHellos._run_narrative_submit", args, retType, true, true, jsonRpcContext);
-        return res.get(0);
-    }
-
-    /**
-     * <p>Original spec-file function name: run_narrative</p>
-     * <pre>
-     * </pre>
-     * @param   said   instance of String
-     * @return   instance of String
-     * @throws IOException if an IO exception occurs
-     * @throws JsonClientException if a JSON RPC exception occurs
-     */
-    public String runNarrative(String said, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
-        String jobId = _runNarrativeSubmit(said, jsonRpcContext);
-        TypeReference<List<JobState<List<String>>>> retType = new TypeReference<List<JobState<List<String>>>>() {};
-        long asyncJobCheckTimeMs = this.asyncJobCheckTimeMs;
-        while (true) {
-            if (Thread.currentThread().isInterrupted())
-                throw new JsonClientException("Thread was interrupted");
-            try { 
-                Thread.sleep(asyncJobCheckTimeMs);
-            } catch(Exception ex) {
-                throw new JsonClientException("Thread was interrupted", ex);
-            }
-            asyncJobCheckTimeMs = Math.min(asyncJobCheckTimeMs * this.asyncJobCheckTimeScalePercent / 100, this.asyncJobCheckMaxTimeMs);
-            JobState<List<String>> res = _checkJob(jobId, retType);
-            if (res.getFinished() != 0L)
-                return res.getResult().get(0);
-        }
-    }
-
     public Map<String, Object> status(RpcContext... jsonRpcContext) throws IOException, JsonClientException {
         List<Object> args = new ArrayList<Object>();
         TypeReference<List<Map<String, Object>>> retType = new TypeReference<List<Map<String, Object>>>() {};

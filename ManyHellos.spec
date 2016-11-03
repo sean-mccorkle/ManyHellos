@@ -18,8 +18,8 @@ module ManyHellos {
     */
 
     typedef structure {
-        string  hello_msg;
-        int     time_limit;
+        string  hello_msg;      /* what to print as the message */
+        int     time_limit;     /* how long the program will run, in seconds */
         string  token;
     } ManyHellosInputParams;
 

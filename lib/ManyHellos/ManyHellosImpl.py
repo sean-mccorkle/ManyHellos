@@ -4,6 +4,7 @@
 from pprint import pprint 
 from biokbase.njs_wrapper.client import NarrativeJobService as NJS
 from biokbase.workspace.client import Workspace
+import time
 
 #END_HEADER
 
@@ -24,9 +25,9 @@ does is run several "hello world" programs.
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "0.0.1"
-    GIT_URL = "https://github.com/sean-mccorkle/ManyHellos"
-    GIT_COMMIT_HASH = "1374eaf09aa41031df00ba1470640f535cf2ad48"
+    VERSION = "0.0.3"
+    GIT_URL = "https://github.com/sean-mccorkle/ManyHellos.git"
+    GIT_COMMIT_HASH = "f1812d2d452a391c76fa3fa1e03ea14e98d10a6c"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -37,8 +38,7 @@ does is run several "hello world" programs.
         #BEGIN_CONSTRUCTOR
         self.main_message = ""
         self.number_of_jobs = 0
-        self.time_limit = 0
- 
+        self.time_limit = 24 * 3600  # sec 
         self.config = config
         
         #END_CONSTRUCTOR
@@ -127,21 +127,21 @@ does is run several "hello world" programs.
 
         res = "{0}: {1}".format(task['job_number'], task['msg'])
 
-        print( "exiting manyHellos_runEach(), res is", res )
+        print( "pausing for ", self.time_limit, "seconds" )
+        time.sleep( 60 )
 
         ws_client=Workspace(url=self.config['workspace-url'], token=ctx['token'])
-	res= ws_client.save_objects(
+        res= ws_client.save_objects(
                             {"workspace":task['workspace'],
                              "objects": [{
                                             'type':'KBaseReport.Report',
                                             "data":{'objects_created':[], 'text_message': res },
                                             "name":"{0}_{1}.rpt".format(task['msg'],task['job_number']),
                                             "meta" : {}
-                                        
-	    				}]
+                                        }]
                             })
 
-
+        print( "exiting manyHellos_runEach(), res is", res )
 
         #END manyHellos_runEach
 
@@ -192,23 +192,6 @@ does is run several "hello world" programs.
         # At some point might do deeper type checking...
         if not isinstance(returnVal, basestring):
             raise ValueError('Method hi return value ' +
-                             'returnVal is not type basestring as required.')
-        # return the results
-        return [returnVal]
-
-    def run_narrative(self, ctx, said):
-        """
-        :param said: instance of String
-        :returns: instance of String
-        """
-        # ctx is the context object
-        # return variables are: returnVal
-        #BEGIN run_narrative
-        #END run_narrative
-
-        # At some point might do deeper type checking...
-        if not isinstance(returnVal, basestring):
-            raise ValueError('Method run_narrative return value ' +
                              'returnVal is not type basestring as required.')
         # return the results
         return [returnVal]
