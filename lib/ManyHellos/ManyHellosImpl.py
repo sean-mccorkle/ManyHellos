@@ -127,8 +127,8 @@ does is run several "hello world" programs.
 
         res = "{0}: {1}".format(task['job_number'], task['msg'])
 
-        print( "pausing for ", self.time_limit, "seconds" )
-        time.sleep( 60 )
+        print( "pausing for 120 seconds" )
+        time.sleep( 120 )
 
         ws_client=Workspace(url=self.config['workspace-url'], token=ctx['token'])
         res= ws_client.save_objects(
