@@ -5,6 +5,7 @@ from pprint import pprint
 from biokbase.njs_wrapper.client import NarrativeJobService as NJS
 from biokbase.workspace.client import Workspace
 import time
+import json
 
 #END_HEADER
 
@@ -131,7 +132,7 @@ does is run several "hello world" programs.
         time.sleep( 120 )
 
         ws_client=Workspace(url=self.config['workspace-url'], token=ctx['token'])
-        res= ws_client.save_objects(
+        res_obj= ws_client.save_objects(
                             {"workspace":task['workspace'],
                              "objects": [{
                                             'type':'KBaseReport.Report',
@@ -140,6 +141,7 @@ does is run several "hello world" programs.
                                             "meta" : {}
                                         }]
                             })
+        res = json.dumps( res_obj )
 
         print( "exiting manyHellos_runEach(), res is", res )
 
