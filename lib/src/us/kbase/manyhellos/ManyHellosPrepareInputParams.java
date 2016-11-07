@@ -13,70 +13,86 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * <p>Original spec-file type: ManyHellos_prepareInputParams</p>
- * <pre>
- * prepare()
- * </pre>
+ * 
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "msg",
-    "num_jobs",
-    "workspace"
+    "global_method",
+    "global_input_params"
 })
 public class ManyHellosPrepareInputParams {
 
-    @JsonProperty("msg")
-    private String msg;
-    @JsonProperty("num_jobs")
-    private Long numJobs;
-    @JsonProperty("workspace")
-    private String workspace;
+    /**
+     * <p>Original spec-file type: FullMethodQualifier</p>
+     * 
+     * 
+     */
+    @JsonProperty("global_method")
+    private FullMethodQualifier globalMethod;
+    /**
+     * <p>Original spec-file type: ManyHellos_globalInputParams</p>
+     * <pre>
+     * prepare()
+     * </pre>
+     * 
+     */
+    @JsonProperty("global_input_params")
+    private ManyHellosGlobalInputParams globalInputParams;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("msg")
-    public String getMsg() {
-        return msg;
+    /**
+     * <p>Original spec-file type: FullMethodQualifier</p>
+     * 
+     * 
+     */
+    @JsonProperty("global_method")
+    public FullMethodQualifier getGlobalMethod() {
+        return globalMethod;
     }
 
-    @JsonProperty("msg")
-    public void setMsg(String msg) {
-        this.msg = msg;
+    /**
+     * <p>Original spec-file type: FullMethodQualifier</p>
+     * 
+     * 
+     */
+    @JsonProperty("global_method")
+    public void setGlobalMethod(FullMethodQualifier globalMethod) {
+        this.globalMethod = globalMethod;
     }
 
-    public ManyHellosPrepareInputParams withMsg(String msg) {
-        this.msg = msg;
+    public ManyHellosPrepareInputParams withGlobalMethod(FullMethodQualifier globalMethod) {
+        this.globalMethod = globalMethod;
         return this;
     }
 
-    @JsonProperty("num_jobs")
-    public Long getNumJobs() {
-        return numJobs;
+    /**
+     * <p>Original spec-file type: ManyHellos_globalInputParams</p>
+     * <pre>
+     * prepare()
+     * </pre>
+     * 
+     */
+    @JsonProperty("global_input_params")
+    public ManyHellosGlobalInputParams getGlobalInputParams() {
+        return globalInputParams;
     }
 
-    @JsonProperty("num_jobs")
-    public void setNumJobs(Long numJobs) {
-        this.numJobs = numJobs;
+    /**
+     * <p>Original spec-file type: ManyHellos_globalInputParams</p>
+     * <pre>
+     * prepare()
+     * </pre>
+     * 
+     */
+    @JsonProperty("global_input_params")
+    public void setGlobalInputParams(ManyHellosGlobalInputParams globalInputParams) {
+        this.globalInputParams = globalInputParams;
     }
 
-    public ManyHellosPrepareInputParams withNumJobs(Long numJobs) {
-        this.numJobs = numJobs;
-        return this;
-    }
-
-    @JsonProperty("workspace")
-    public String getWorkspace() {
-        return workspace;
-    }
-
-    @JsonProperty("workspace")
-    public void setWorkspace(String workspace) {
-        this.workspace = workspace;
-    }
-
-    public ManyHellosPrepareInputParams withWorkspace(String workspace) {
-        this.workspace = workspace;
+    public ManyHellosPrepareInputParams withGlobalInputParams(ManyHellosGlobalInputParams globalInputParams) {
+        this.globalInputParams = globalInputParams;
         return this;
     }
 
@@ -92,7 +108,7 @@ public class ManyHellosPrepareInputParams {
 
     @Override
     public String toString() {
-        return ((((((((("ManyHellosPrepareInputParams"+" [msg=")+ msg)+", numJobs=")+ numJobs)+", workspace=")+ workspace)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((("ManyHellosPrepareInputParams"+" [globalMethod=")+ globalMethod)+", globalInputParams=")+ globalInputParams)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

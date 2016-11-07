@@ -20,46 +20,79 @@ module ManyHellos {
     typedef structure {
         string  hello_msg;      /* what to print as the message */
         int     time_limit;     /* how long the program will run, in seconds */
-        string  token;
     } ManyHellosInputParams;
 
-    typedef string ManyHellosOutputObj;
+    typedef structure {
+        string output;
+    } ManyHellos_globalResult;
 
-    async funcdef  manyHellos( ManyHellosInputParams input_params) returns ( ManyHellosOutputObj output_obj ) authentication required;
+    funcdef manyHellos(ManyHellosInputParams input_params) returns (ManyHellos_globalResult) authentication required;
+
 
     /* prepare() */
 
     typedef structure {
-        string  msg;
-        int     num_jobs;
-        string  workspace;
+        string msg;
+        int num_jobs;
+        string workspace;
+    } ManyHellos_globalInputParams;
+
+    typedef structure {
+        string module_name;
+        string method_name;
+        string service_ver;
+    } FullMethodQualifier;
+    
+    typedef structure {
+        FullMethodQualifier global_method;
+        ManyHellos_globalInputParams global_input_params;
     } ManyHellos_prepareInputParams;
 
     typedef  structure {
         string msg;
-        int  job_number;
-        string  workspace;
+        int job_number;
+        string workspace;
     } ManyHellos_task;
+    
+    typedef structure {
+        FullMethodQualifier method;
+        tuple<ManyHellos_task> input_arguments;
+    } ManyHellos_runEachInput;
 
-    typedef  list<ManyHellos_task>  ManyHellos_tasklist;
+    typedef structure {
+        list<ManyHellos_runEachInput> tasks;
+        FullMethodQualifier collect_method;
+    } ManyHellos_prepareSchedule;
 
-    funcdef  manyHellos_prepare( ManyHellos_prepareInputParams input_params ) returns ( ManyHellos_tasklist tasks ) authentication required;
+    funcdef manyHellos_prepare(ManyHellos_prepareInputParams prepare_params) returns (ManyHellos_prepareSchedule) authentication required;
+
 
     /* runEach() */
 
-    typedef  string  ManyHellos_runEachResult;
+    typedef structure {
+        string message;
+    } ManyHellos_runEachResult;
 
-    async funcdef  manyHellos_runEach( ManyHellos_task task )  returns ( ManyHellos_runEachResult res ) authentication required;
+    funcdef manyHellos_runEach(ManyHellos_task task) returns (ManyHellos_runEachResult) authentication required;
+
 
     /* collect() */
 
+    /*
+        execution_time - execution time in milliseconds (may be not set by KBParallel).
+    */
     typedef structure {
-        int    num_jobs;
+        ManyHellos_runEachInput input;
+        ManyHellos_runEachResult result;
+        int execution_time;
+    } ManyHellos_InputResultPair;
+
+    typedef structure {
+        ManyHellos_globalInputParams global_params;
+        list<ManyHellos_InputResultPair> input_result_pairs;
     } ManyHellos_collectInputParams;
 
-    typedef  string  ManyHellos_collectResult;
-
-    funcdef  manyHellos_collect( ManyHellos_collectInputParams input_params ) returns ( ManyHellos_collectResult res ) authentication required;
+    funcdef manyHellos_collect(ManyHellos_collectInputParams collect_params) returns (ManyHellos_globalResult) authentication required;
 
     async funcdef  hi(string said) returns (string) authentication required;
 

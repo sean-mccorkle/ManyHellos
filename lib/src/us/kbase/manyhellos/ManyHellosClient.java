@@ -203,60 +203,32 @@ public class ManyHellosClient {
      * <pre>
      * </pre>
      * @param   inputParams   instance of type {@link us.kbase.manyhellos.ManyHellosInputParams ManyHellosInputParams}
-     * @return   parameter "output_obj" of original type "ManyHellosOutputObj"
+     * @return   instance of type {@link us.kbase.manyhellos.ManyHellosGlobalResult ManyHellosGlobalResult} (original type "ManyHellos_globalResult")
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
-    protected String _manyHellosSubmit(ManyHellosInputParams inputParams, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+    public ManyHellosGlobalResult manyHellos(ManyHellosInputParams inputParams, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
         List<Object> args = new ArrayList<Object>();
         args.add(inputParams);
-        TypeReference<List<String>> retType = new TypeReference<List<String>>() {};
-        List<String> res = caller.jsonrpcCall("ManyHellos._manyHellos_submit", args, retType, true, true, jsonRpcContext);
+        TypeReference<List<ManyHellosGlobalResult>> retType = new TypeReference<List<ManyHellosGlobalResult>>() {};
+        List<ManyHellosGlobalResult> res = caller.jsonrpcCall("ManyHellos.manyHellos", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
-    }
-
-    /**
-     * <p>Original spec-file function name: manyHellos</p>
-     * <pre>
-     * </pre>
-     * @param   inputParams   instance of type {@link us.kbase.manyhellos.ManyHellosInputParams ManyHellosInputParams}
-     * @return   parameter "output_obj" of original type "ManyHellosOutputObj"
-     * @throws IOException if an IO exception occurs
-     * @throws JsonClientException if a JSON RPC exception occurs
-     */
-    public String manyHellos(ManyHellosInputParams inputParams, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
-        String jobId = _manyHellosSubmit(inputParams, jsonRpcContext);
-        TypeReference<List<JobState<List<String>>>> retType = new TypeReference<List<JobState<List<String>>>>() {};
-        long asyncJobCheckTimeMs = this.asyncJobCheckTimeMs;
-        while (true) {
-            if (Thread.currentThread().isInterrupted())
-                throw new JsonClientException("Thread was interrupted");
-            try { 
-                Thread.sleep(asyncJobCheckTimeMs);
-            } catch(Exception ex) {
-                throw new JsonClientException("Thread was interrupted", ex);
-            }
-            asyncJobCheckTimeMs = Math.min(asyncJobCheckTimeMs * this.asyncJobCheckTimeScalePercent / 100, this.asyncJobCheckMaxTimeMs);
-            JobState<List<String>> res = _checkJob(jobId, retType);
-            if (res.getFinished() != 0L)
-                return res.getResult().get(0);
-        }
     }
 
     /**
      * <p>Original spec-file function name: manyHellos_prepare</p>
      * <pre>
      * </pre>
-     * @param   inputParams   instance of type {@link us.kbase.manyhellos.ManyHellosPrepareInputParams ManyHellosPrepareInputParams} (original type "ManyHellos_prepareInputParams")
-     * @return   parameter "tasks" of original type "ManyHellos_tasklist" &rarr; list of type {@link us.kbase.manyhellos.ManyHellosTask ManyHellosTask} (original type "ManyHellos_task")
+     * @param   prepareParams   instance of type {@link us.kbase.manyhellos.ManyHellosPrepareInputParams ManyHellosPrepareInputParams} (original type "ManyHellos_prepareInputParams")
+     * @return   instance of type {@link us.kbase.manyhellos.ManyHellosPrepareSchedule ManyHellosPrepareSchedule} (original type "ManyHellos_prepareSchedule")
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
-    public List<ManyHellosTask> manyHellosPrepare(ManyHellosPrepareInputParams inputParams, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+    public ManyHellosPrepareSchedule manyHellosPrepare(ManyHellosPrepareInputParams prepareParams, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
         List<Object> args = new ArrayList<Object>();
-        args.add(inputParams);
-        TypeReference<List<List<ManyHellosTask>>> retType = new TypeReference<List<List<ManyHellosTask>>>() {};
-        List<List<ManyHellosTask>> res = caller.jsonrpcCall("ManyHellos.manyHellos_prepare", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        args.add(prepareParams);
+        TypeReference<List<ManyHellosPrepareSchedule>> retType = new TypeReference<List<ManyHellosPrepareSchedule>>() {};
+        List<ManyHellosPrepareSchedule> res = caller.jsonrpcCall("ManyHellos.manyHellos_prepare", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -265,60 +237,32 @@ public class ManyHellosClient {
      * <pre>
      * </pre>
      * @param   task   instance of type {@link us.kbase.manyhellos.ManyHellosTask ManyHellosTask} (original type "ManyHellos_task")
-     * @return   parameter "res" of original type "ManyHellos_runEachResult" (runEach())
+     * @return   instance of type {@link us.kbase.manyhellos.ManyHellosRunEachResult ManyHellosRunEachResult} (original type "ManyHellos_runEachResult")
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
-    protected String _manyHellosRunEachSubmit(ManyHellosTask task, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+    public ManyHellosRunEachResult manyHellosRunEach(ManyHellosTask task, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
         List<Object> args = new ArrayList<Object>();
         args.add(task);
-        TypeReference<List<String>> retType = new TypeReference<List<String>>() {};
-        List<String> res = caller.jsonrpcCall("ManyHellos._manyHellos_runEach_submit", args, retType, true, true, jsonRpcContext);
+        TypeReference<List<ManyHellosRunEachResult>> retType = new TypeReference<List<ManyHellosRunEachResult>>() {};
+        List<ManyHellosRunEachResult> res = caller.jsonrpcCall("ManyHellos.manyHellos_runEach", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
-    }
-
-    /**
-     * <p>Original spec-file function name: manyHellos_runEach</p>
-     * <pre>
-     * </pre>
-     * @param   task   instance of type {@link us.kbase.manyhellos.ManyHellosTask ManyHellosTask} (original type "ManyHellos_task")
-     * @return   parameter "res" of original type "ManyHellos_runEachResult" (runEach())
-     * @throws IOException if an IO exception occurs
-     * @throws JsonClientException if a JSON RPC exception occurs
-     */
-    public String manyHellosRunEach(ManyHellosTask task, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
-        String jobId = _manyHellosRunEachSubmit(task, jsonRpcContext);
-        TypeReference<List<JobState<List<String>>>> retType = new TypeReference<List<JobState<List<String>>>>() {};
-        long asyncJobCheckTimeMs = this.asyncJobCheckTimeMs;
-        while (true) {
-            if (Thread.currentThread().isInterrupted())
-                throw new JsonClientException("Thread was interrupted");
-            try { 
-                Thread.sleep(asyncJobCheckTimeMs);
-            } catch(Exception ex) {
-                throw new JsonClientException("Thread was interrupted", ex);
-            }
-            asyncJobCheckTimeMs = Math.min(asyncJobCheckTimeMs * this.asyncJobCheckTimeScalePercent / 100, this.asyncJobCheckMaxTimeMs);
-            JobState<List<String>> res = _checkJob(jobId, retType);
-            if (res.getFinished() != 0L)
-                return res.getResult().get(0);
-        }
     }
 
     /**
      * <p>Original spec-file function name: manyHellos_collect</p>
      * <pre>
      * </pre>
-     * @param   inputParams   instance of type {@link us.kbase.manyhellos.ManyHellosCollectInputParams ManyHellosCollectInputParams} (original type "ManyHellos_collectInputParams")
-     * @return   parameter "res" of original type "ManyHellos_collectResult"
+     * @param   collectParams   instance of type {@link us.kbase.manyhellos.ManyHellosCollectInputParams ManyHellosCollectInputParams} (original type "ManyHellos_collectInputParams")
+     * @return   instance of type {@link us.kbase.manyhellos.ManyHellosGlobalResult ManyHellosGlobalResult} (original type "ManyHellos_globalResult")
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
-    public String manyHellosCollect(ManyHellosCollectInputParams inputParams, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+    public ManyHellosGlobalResult manyHellosCollect(ManyHellosCollectInputParams collectParams, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
         List<Object> args = new ArrayList<Object>();
-        args.add(inputParams);
-        TypeReference<List<String>> retType = new TypeReference<List<String>>() {};
-        List<String> res = caller.jsonrpcCall("ManyHellos.manyHellos_collect", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        args.add(collectParams);
+        TypeReference<List<ManyHellosGlobalResult>> retType = new TypeReference<List<ManyHellosGlobalResult>>() {};
+        List<ManyHellosGlobalResult> res = caller.jsonrpcCall("ManyHellos.manyHellos_collect", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 

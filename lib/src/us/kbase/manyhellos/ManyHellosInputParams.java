@@ -23,8 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
     "hello_msg",
-    "time_limit",
-    "token"
+    "time_limit"
 })
 public class ManyHellosInputParams {
 
@@ -32,8 +31,6 @@ public class ManyHellosInputParams {
     private String helloMsg;
     @JsonProperty("time_limit")
     private Long timeLimit;
-    @JsonProperty("token")
-    private String token;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("hello_msg")
@@ -66,21 +63,6 @@ public class ManyHellosInputParams {
         return this;
     }
 
-    @JsonProperty("token")
-    public String getToken() {
-        return token;
-    }
-
-    @JsonProperty("token")
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public ManyHellosInputParams withToken(String token) {
-        this.token = token;
-        return this;
-    }
-
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -93,7 +75,7 @@ public class ManyHellosInputParams {
 
     @Override
     public String toString() {
-        return ((((((((("ManyHellosInputParams"+" [helloMsg=")+ helloMsg)+", timeLimit=")+ timeLimit)+", token=")+ token)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((("ManyHellosInputParams"+" [helloMsg=")+ helloMsg)+", timeLimit=")+ timeLimit)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

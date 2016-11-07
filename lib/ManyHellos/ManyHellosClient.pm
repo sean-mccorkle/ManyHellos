@@ -168,7 +168,7 @@ sub _check_job {
 
 =head2 manyHellos
 
-  $output_obj = $obj->manyHellos($input_params)
+  $return = $obj->manyHellos($input_params)
 
 =over 4
 
@@ -178,12 +178,12 @@ sub _check_job {
 
 <pre>
 $input_params is a ManyHellos.ManyHellosInputParams
-$output_obj is a ManyHellos.ManyHellosOutputObj
+$return is a ManyHellos.ManyHellos_globalResult
 ManyHellosInputParams is a reference to a hash where the following keys are defined:
 	hello_msg has a value which is a string
 	time_limit has a value which is an int
-	token has a value which is a string
-ManyHellosOutputObj is a string
+ManyHellos_globalResult is a reference to a hash where the following keys are defined:
+	output has a value which is a string
 
 </pre>
 
@@ -192,12 +192,12 @@ ManyHellosOutputObj is a string
 =begin text
 
 $input_params is a ManyHellos.ManyHellosInputParams
-$output_obj is a ManyHellos.ManyHellosOutputObj
+$return is a ManyHellos.ManyHellos_globalResult
 ManyHellosInputParams is a reference to a hash where the following keys are defined:
 	hello_msg has a value which is a string
 	time_limit has a value which is an int
-	token has a value which is a string
-ManyHellosOutputObj is a string
+ManyHellos_globalResult is a reference to a hash where the following keys are defined:
+	output has a value which is a string
 
 
 =end text
@@ -210,74 +210,57 @@ ManyHellosOutputObj is a string
 
 =cut
 
-sub manyHellos
+ sub manyHellos
 {
     my($self, @args) = @_;
-    my $job_id = $self->_manyHellos_submit(@args);
-    my $async_job_check_time = $self->{async_job_check_time};
-    while (1) {
-        Time::HiRes::sleep($async_job_check_time);
-        $async_job_check_time *= $self->{async_job_check_time_scale_percent} / 100.0;
-        if ($async_job_check_time > $self->{async_job_check_max_time}) {
-            $async_job_check_time = $self->{async_job_check_max_time};
-        }
-        my $job_state_ref = $self->_check_job($job_id);
-        if ($job_state_ref->{"finished"} != 0) {
-            if (!exists $job_state_ref->{"result"}) {
-                $job_state_ref->{"result"} = [];
-            }
-            return wantarray ? @{$job_state_ref->{"result"}} : $job_state_ref->{"result"}->[0];
-        }
-    }
-}
 
-sub _manyHellos_submit {
-    my($self, @args) = @_;
 # Authentication: required
-    if ((my $n = @args) != 1) {
-        Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-                                   "Invalid argument count for function _manyHellos_submit (received $n, expecting 1)");
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function manyHellos (received $n, expecting 1)");
     }
     {
-        my($input_params) = @args;
-        my @_bad_arguments;
+	my($input_params) = @args;
+
+	my @_bad_arguments;
         (ref($input_params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"input_params\" (value was \"$input_params\")");
         if (@_bad_arguments) {
-            my $msg = "Invalid arguments passed to _manyHellos_submit:\n" . join("", map { "\t$_\n" } @_bad_arguments);
-            Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-                                   method_name => '_manyHellos_submit');
-        }
+	    my $msg = "Invalid arguments passed to manyHellos:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'manyHellos');
+	}
     }
-    my $context = undef;
-    if ($self->{service_version}) {
-        $context = {'service_ver' => $self->{service_version}};
-    }
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-        method => "ManyHellos._manyHellos_submit",
-        params => \@args}, context => $context);
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "ManyHellos.manyHellos",
+	    params => \@args,
+    });
     if ($result) {
-        if ($result->is_error) {
-            Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
-                           code => $result->content->{error}->{code},
-                           method_name => '_manyHellos_submit',
-                           data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
-            );
-        } else {
-            return $result->result->[0];  # job_id
-        }
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'manyHellos',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
     } else {
-        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method _manyHellos_submit",
-                        status_line => $self->{client}->status_line,
-                        method_name => '_manyHellos_submit');
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method manyHellos",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'manyHellos',
+				       );
     }
 }
-
  
 
 
 =head2 manyHellos_prepare
 
-  $tasks = $obj->manyHellos_prepare($input_params)
+  $return = $obj->manyHellos_prepare($prepare_params)
 
 =over 4
 
@@ -286,13 +269,27 @@ sub _manyHellos_submit {
 =begin html
 
 <pre>
-$input_params is a ManyHellos.ManyHellos_prepareInputParams
-$tasks is a ManyHellos.ManyHellos_tasklist
+$prepare_params is a ManyHellos.ManyHellos_prepareInputParams
+$return is a ManyHellos.ManyHellos_prepareSchedule
 ManyHellos_prepareInputParams is a reference to a hash where the following keys are defined:
+	global_method has a value which is a ManyHellos.FullMethodQualifier
+	global_input_params has a value which is a ManyHellos.ManyHellos_globalInputParams
+FullMethodQualifier is a reference to a hash where the following keys are defined:
+	module_name has a value which is a string
+	method_name has a value which is a string
+	service_ver has a value which is a string
+ManyHellos_globalInputParams is a reference to a hash where the following keys are defined:
 	msg has a value which is a string
 	num_jobs has a value which is an int
 	workspace has a value which is a string
-ManyHellos_tasklist is a reference to a list where each element is a ManyHellos.ManyHellos_task
+ManyHellos_prepareSchedule is a reference to a hash where the following keys are defined:
+	tasks has a value which is a reference to a list where each element is a ManyHellos.ManyHellos_runEachInput
+	collect_method has a value which is a ManyHellos.FullMethodQualifier
+ManyHellos_runEachInput is a reference to a hash where the following keys are defined:
+	method has a value which is a ManyHellos.FullMethodQualifier
+	input_arguments has a value which is a reference to a list containing 1 item:
+		0: a ManyHellos.ManyHellos_task
+
 ManyHellos_task is a reference to a hash where the following keys are defined:
 	msg has a value which is a string
 	job_number has a value which is an int
@@ -304,13 +301,27 @@ ManyHellos_task is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$input_params is a ManyHellos.ManyHellos_prepareInputParams
-$tasks is a ManyHellos.ManyHellos_tasklist
+$prepare_params is a ManyHellos.ManyHellos_prepareInputParams
+$return is a ManyHellos.ManyHellos_prepareSchedule
 ManyHellos_prepareInputParams is a reference to a hash where the following keys are defined:
+	global_method has a value which is a ManyHellos.FullMethodQualifier
+	global_input_params has a value which is a ManyHellos.ManyHellos_globalInputParams
+FullMethodQualifier is a reference to a hash where the following keys are defined:
+	module_name has a value which is a string
+	method_name has a value which is a string
+	service_ver has a value which is a string
+ManyHellos_globalInputParams is a reference to a hash where the following keys are defined:
 	msg has a value which is a string
 	num_jobs has a value which is an int
 	workspace has a value which is a string
-ManyHellos_tasklist is a reference to a list where each element is a ManyHellos.ManyHellos_task
+ManyHellos_prepareSchedule is a reference to a hash where the following keys are defined:
+	tasks has a value which is a reference to a list where each element is a ManyHellos.ManyHellos_runEachInput
+	collect_method has a value which is a ManyHellos.FullMethodQualifier
+ManyHellos_runEachInput is a reference to a hash where the following keys are defined:
+	method has a value which is a ManyHellos.FullMethodQualifier
+	input_arguments has a value which is a reference to a list containing 1 item:
+		0: a ManyHellos.ManyHellos_task
+
 ManyHellos_task is a reference to a hash where the following keys are defined:
 	msg has a value which is a string
 	job_number has a value which is an int
@@ -339,10 +350,10 @@ ManyHellos_task is a reference to a hash where the following keys are defined:
 							       "Invalid argument count for function manyHellos_prepare (received $n, expecting 1)");
     }
     {
-	my($input_params) = @args;
+	my($prepare_params) = @args;
 
 	my @_bad_arguments;
-        (ref($input_params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"input_params\" (value was \"$input_params\")");
+        (ref($prepare_params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"prepare_params\" (value was \"$prepare_params\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to manyHellos_prepare:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -377,7 +388,7 @@ ManyHellos_task is a reference to a hash where the following keys are defined:
 
 =head2 manyHellos_runEach
 
-  $res = $obj->manyHellos_runEach($task)
+  $return = $obj->manyHellos_runEach($task)
 
 =over 4
 
@@ -387,12 +398,13 @@ ManyHellos_task is a reference to a hash where the following keys are defined:
 
 <pre>
 $task is a ManyHellos.ManyHellos_task
-$res is a ManyHellos.ManyHellos_runEachResult
+$return is a ManyHellos.ManyHellos_runEachResult
 ManyHellos_task is a reference to a hash where the following keys are defined:
 	msg has a value which is a string
 	job_number has a value which is an int
 	workspace has a value which is a string
-ManyHellos_runEachResult is a string
+ManyHellos_runEachResult is a reference to a hash where the following keys are defined:
+	message has a value which is a string
 
 </pre>
 
@@ -401,12 +413,13 @@ ManyHellos_runEachResult is a string
 =begin text
 
 $task is a ManyHellos.ManyHellos_task
-$res is a ManyHellos.ManyHellos_runEachResult
+$return is a ManyHellos.ManyHellos_runEachResult
 ManyHellos_task is a reference to a hash where the following keys are defined:
 	msg has a value which is a string
 	job_number has a value which is an int
 	workspace has a value which is a string
-ManyHellos_runEachResult is a string
+ManyHellos_runEachResult is a reference to a hash where the following keys are defined:
+	message has a value which is a string
 
 
 =end text
@@ -419,74 +432,57 @@ ManyHellos_runEachResult is a string
 
 =cut
 
-sub manyHellos_runEach
+ sub manyHellos_runEach
 {
     my($self, @args) = @_;
-    my $job_id = $self->_manyHellos_runEach_submit(@args);
-    my $async_job_check_time = $self->{async_job_check_time};
-    while (1) {
-        Time::HiRes::sleep($async_job_check_time);
-        $async_job_check_time *= $self->{async_job_check_time_scale_percent} / 100.0;
-        if ($async_job_check_time > $self->{async_job_check_max_time}) {
-            $async_job_check_time = $self->{async_job_check_max_time};
-        }
-        my $job_state_ref = $self->_check_job($job_id);
-        if ($job_state_ref->{"finished"} != 0) {
-            if (!exists $job_state_ref->{"result"}) {
-                $job_state_ref->{"result"} = [];
-            }
-            return wantarray ? @{$job_state_ref->{"result"}} : $job_state_ref->{"result"}->[0];
-        }
-    }
-}
 
-sub _manyHellos_runEach_submit {
-    my($self, @args) = @_;
 # Authentication: required
-    if ((my $n = @args) != 1) {
-        Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-                                   "Invalid argument count for function _manyHellos_runEach_submit (received $n, expecting 1)");
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function manyHellos_runEach (received $n, expecting 1)");
     }
     {
-        my($task) = @args;
-        my @_bad_arguments;
+	my($task) = @args;
+
+	my @_bad_arguments;
         (ref($task) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"task\" (value was \"$task\")");
         if (@_bad_arguments) {
-            my $msg = "Invalid arguments passed to _manyHellos_runEach_submit:\n" . join("", map { "\t$_\n" } @_bad_arguments);
-            Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-                                   method_name => '_manyHellos_runEach_submit');
-        }
+	    my $msg = "Invalid arguments passed to manyHellos_runEach:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'manyHellos_runEach');
+	}
     }
-    my $context = undef;
-    if ($self->{service_version}) {
-        $context = {'service_ver' => $self->{service_version}};
-    }
-    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
-        method => "ManyHellos._manyHellos_runEach_submit",
-        params => \@args}, context => $context);
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "ManyHellos.manyHellos_runEach",
+	    params => \@args,
+    });
     if ($result) {
-        if ($result->is_error) {
-            Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
-                           code => $result->content->{error}->{code},
-                           method_name => '_manyHellos_runEach_submit',
-                           data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
-            );
-        } else {
-            return $result->result->[0];  # job_id
-        }
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'manyHellos_runEach',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
     } else {
-        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method _manyHellos_runEach_submit",
-                        status_line => $self->{client}->status_line,
-                        method_name => '_manyHellos_runEach_submit');
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method manyHellos_runEach",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'manyHellos_runEach',
+				       );
     }
 }
-
  
 
 
 =head2 manyHellos_collect
 
-  $res = $obj->manyHellos_collect($input_params)
+  $return = $obj->manyHellos_collect($collect_params)
 
 =over 4
 
@@ -495,11 +491,36 @@ sub _manyHellos_runEach_submit {
 =begin html
 
 <pre>
-$input_params is a ManyHellos.ManyHellos_collectInputParams
-$res is a ManyHellos.ManyHellos_collectResult
+$collect_params is a ManyHellos.ManyHellos_collectInputParams
+$return is a ManyHellos.ManyHellos_globalResult
 ManyHellos_collectInputParams is a reference to a hash where the following keys are defined:
+	global_params has a value which is a ManyHellos.ManyHellos_globalInputParams
+	input_result_pairs has a value which is a reference to a list where each element is a ManyHellos.ManyHellos_InputResultPair
+ManyHellos_globalInputParams is a reference to a hash where the following keys are defined:
+	msg has a value which is a string
 	num_jobs has a value which is an int
-ManyHellos_collectResult is a string
+	workspace has a value which is a string
+ManyHellos_InputResultPair is a reference to a hash where the following keys are defined:
+	input has a value which is a ManyHellos.ManyHellos_runEachInput
+	result has a value which is a ManyHellos.ManyHellos_runEachResult
+	execution_time has a value which is an int
+ManyHellos_runEachInput is a reference to a hash where the following keys are defined:
+	method has a value which is a ManyHellos.FullMethodQualifier
+	input_arguments has a value which is a reference to a list containing 1 item:
+		0: a ManyHellos.ManyHellos_task
+
+FullMethodQualifier is a reference to a hash where the following keys are defined:
+	module_name has a value which is a string
+	method_name has a value which is a string
+	service_ver has a value which is a string
+ManyHellos_task is a reference to a hash where the following keys are defined:
+	msg has a value which is a string
+	job_number has a value which is an int
+	workspace has a value which is a string
+ManyHellos_runEachResult is a reference to a hash where the following keys are defined:
+	message has a value which is a string
+ManyHellos_globalResult is a reference to a hash where the following keys are defined:
+	output has a value which is a string
 
 </pre>
 
@@ -507,11 +528,36 @@ ManyHellos_collectResult is a string
 
 =begin text
 
-$input_params is a ManyHellos.ManyHellos_collectInputParams
-$res is a ManyHellos.ManyHellos_collectResult
+$collect_params is a ManyHellos.ManyHellos_collectInputParams
+$return is a ManyHellos.ManyHellos_globalResult
 ManyHellos_collectInputParams is a reference to a hash where the following keys are defined:
+	global_params has a value which is a ManyHellos.ManyHellos_globalInputParams
+	input_result_pairs has a value which is a reference to a list where each element is a ManyHellos.ManyHellos_InputResultPair
+ManyHellos_globalInputParams is a reference to a hash where the following keys are defined:
+	msg has a value which is a string
 	num_jobs has a value which is an int
-ManyHellos_collectResult is a string
+	workspace has a value which is a string
+ManyHellos_InputResultPair is a reference to a hash where the following keys are defined:
+	input has a value which is a ManyHellos.ManyHellos_runEachInput
+	result has a value which is a ManyHellos.ManyHellos_runEachResult
+	execution_time has a value which is an int
+ManyHellos_runEachInput is a reference to a hash where the following keys are defined:
+	method has a value which is a ManyHellos.FullMethodQualifier
+	input_arguments has a value which is a reference to a list containing 1 item:
+		0: a ManyHellos.ManyHellos_task
+
+FullMethodQualifier is a reference to a hash where the following keys are defined:
+	module_name has a value which is a string
+	method_name has a value which is a string
+	service_ver has a value which is a string
+ManyHellos_task is a reference to a hash where the following keys are defined:
+	msg has a value which is a string
+	job_number has a value which is an int
+	workspace has a value which is a string
+ManyHellos_runEachResult is a reference to a hash where the following keys are defined:
+	message has a value which is a string
+ManyHellos_globalResult is a reference to a hash where the following keys are defined:
+	output has a value which is a string
 
 
 =end text
@@ -536,10 +582,10 @@ ManyHellos_collectResult is a string
 							       "Invalid argument count for function manyHellos_collect (received $n, expecting 1)");
     }
     {
-	my($input_params) = @args;
+	my($collect_params) = @args;
 
 	my @_bad_arguments;
-        (ref($input_params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"input_params\" (value was \"$input_params\")");
+        (ref($collect_params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"collect_params\" (value was \"$collect_params\")");
         if (@_bad_arguments) {
 	    my $msg = "Invalid arguments passed to manyHellos_collect:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -778,7 +824,6 @@ should probably be in the constructor?   maybe manyHellos_prepare()
 a reference to a hash where the following keys are defined:
 hello_msg has a value which is a string
 time_limit has a value which is an int
-token has a value which is a string
 
 </pre>
 
@@ -789,7 +834,6 @@ token has a value which is a string
 a reference to a hash where the following keys are defined:
 hello_msg has a value which is a string
 time_limit has a value which is an int
-token has a value which is a string
 
 
 =end text
@@ -798,7 +842,7 @@ token has a value which is a string
 
 
 
-=head2 ManyHellosOutputObj
+=head2 ManyHellos_globalResult
 
 =over 4
 
@@ -809,14 +853,18 @@ token has a value which is a string
 =begin html
 
 <pre>
-a string
+a reference to a hash where the following keys are defined:
+output has a value which is a string
+
 </pre>
 
 =end html
 
 =begin text
 
-a string
+a reference to a hash where the following keys are defined:
+output has a value which is a string
+
 
 =end text
 
@@ -824,7 +872,7 @@ a string
 
 
 
-=head2 ManyHellos_prepareInputParams
+=head2 ManyHellos_globalInputParams
 
 =over 4
 
@@ -855,6 +903,72 @@ a reference to a hash where the following keys are defined:
 msg has a value which is a string
 num_jobs has a value which is an int
 workspace has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 FullMethodQualifier
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+module_name has a value which is a string
+method_name has a value which is a string
+service_ver has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+module_name has a value which is a string
+method_name has a value which is a string
+service_ver has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 ManyHellos_prepareInputParams
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+global_method has a value which is a ManyHellos.FullMethodQualifier
+global_input_params has a value which is a ManyHellos.ManyHellos_globalInputParams
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+global_method has a value which is a ManyHellos.FullMethodQualifier
+global_input_params has a value which is a ManyHellos.ManyHellos_globalInputParams
 
 
 =end text
@@ -897,7 +1011,7 @@ workspace has a value which is a string
 
 
 
-=head2 ManyHellos_tasklist
+=head2 ManyHellos_runEachInput
 
 =over 4
 
@@ -908,14 +1022,56 @@ workspace has a value which is a string
 =begin html
 
 <pre>
-a reference to a list where each element is a ManyHellos.ManyHellos_task
+a reference to a hash where the following keys are defined:
+method has a value which is a ManyHellos.FullMethodQualifier
+input_arguments has a value which is a reference to a list containing 1 item:
+	0: a ManyHellos.ManyHellos_task
+
+
 </pre>
 
 =end html
 
 =begin text
 
-a reference to a list where each element is a ManyHellos.ManyHellos_task
+a reference to a hash where the following keys are defined:
+method has a value which is a ManyHellos.FullMethodQualifier
+input_arguments has a value which is a reference to a list containing 1 item:
+	0: a ManyHellos.ManyHellos_task
+
+
+
+=end text
+
+=back
+
+
+
+=head2 ManyHellos_prepareSchedule
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+tasks has a value which is a reference to a list where each element is a ManyHellos.ManyHellos_runEachInput
+collect_method has a value which is a ManyHellos.FullMethodQualifier
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+tasks has a value which is a reference to a list where each element is a ManyHellos.ManyHellos_runEachInput
+collect_method has a value which is a ManyHellos.FullMethodQualifier
+
 
 =end text
 
@@ -939,14 +1095,57 @@ runEach()
 =begin html
 
 <pre>
-a string
+a reference to a hash where the following keys are defined:
+message has a value which is a string
+
 </pre>
 
 =end html
 
 =begin text
 
-a string
+a reference to a hash where the following keys are defined:
+message has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 ManyHellos_InputResultPair
+
+=over 4
+
+
+
+=item Description
+
+execution_time - execution time in milliseconds (may be not set by KBParallel).
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+input has a value which is a ManyHellos.ManyHellos_runEachInput
+result has a value which is a ManyHellos.ManyHellos_runEachResult
+execution_time has a value which is an int
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+input has a value which is a ManyHellos.ManyHellos_runEachInput
+result has a value which is a ManyHellos.ManyHellos_runEachResult
+execution_time has a value which is an int
+
 
 =end text
 
@@ -960,18 +1159,14 @@ a string
 
 
 
-=item Description
-
-collect()
-
-
 =item Definition
 
 =begin html
 
 <pre>
 a reference to a hash where the following keys are defined:
-num_jobs has a value which is an int
+global_params has a value which is a ManyHellos.ManyHellos_globalInputParams
+input_result_pairs has a value which is a reference to a list where each element is a ManyHellos.ManyHellos_InputResultPair
 
 </pre>
 
@@ -980,34 +1175,9 @@ num_jobs has a value which is an int
 =begin text
 
 a reference to a hash where the following keys are defined:
-num_jobs has a value which is an int
+global_params has a value which is a ManyHellos.ManyHellos_globalInputParams
+input_result_pairs has a value which is a reference to a list where each element is a ManyHellos.ManyHellos_InputResultPair
 
-
-=end text
-
-=back
-
-
-
-=head2 ManyHellos_collectResult
-
-=over 4
-
-
-
-=item Definition
-
-=begin html
-
-<pre>
-a string
-</pre>
-
-=end html
-
-=begin text
-
-a string
 
 =end text
 
