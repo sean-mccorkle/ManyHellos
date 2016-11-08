@@ -215,8 +215,8 @@ does is run several "hello world" programs.
         res = "default manyHellos_collect() result"
 
         job_pairs = collect_params['input_result_pairs']
-        jobs = [tuple(pair['input']['input_arguments'][0]['job_number'], 
-                      pair['result']['message']) for pair in job_pairs]
+        jobs = [[pair['input']['input_arguments'][0]['job_number'], 
+                     pair['result']['message']] for pair in job_pairs]
         returnVal = {'output': res, 'jobs': jobs}
         print( "exiting manyHellos_collect, returnVal is", returnVal )
         #END manyHellos_collect
