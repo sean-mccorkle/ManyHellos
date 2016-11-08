@@ -107,20 +107,20 @@ does is run several "hello world" programs.
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN manyHellos_prepare
-        input_params = prepare_params['global_input_params']
+        global_input_params = prepare_params['global_input_params']
         global_method = prepare_params['global_method']
         print( "this is manyHellos_prepare..." )
-        print( "num_jobs is ", input_params["num_jobs"] )
-        self.num_jobs = int(input_params["num_jobs"]);
+        print( "num_jobs is ", global_input_params["num_jobs"] )
+        self.num_jobs = int(global_input_params["num_jobs"]);
 
         tasks = []
+        each_method = global_method.copy()
+        each_method['method_name'] = global_method['method_name'] + "_runEach"
         for i in range( self.num_jobs ):
-            input_params = {'msg': input_params['msg'], 
+            each_input_params = {'msg': global_input_params['msg'], 
                             'job_number': i , 
-                            'workspace' : input_params['workspace']}
-            each_method = global_method.copy()
-            each_method['method_name'] = global_method['method_name'] + "_runEach"
-            task = {'method': each_method, 'input_arguments': [input_params]}
+                            'workspace' : global_input_params['workspace']}
+            task = {'method': each_method, 'input_arguments': [each_input_params]}
             tasks.append( task )
 
         collect_method = global_method.copy()
