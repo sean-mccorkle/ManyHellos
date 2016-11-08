@@ -106,25 +106,24 @@ class ManyHellosTest(unittest.TestCase):
         #                                  'objects': []})
         #
         # Run your method by
-        print("Skipping test until KBParallel is working properly")
-        return
         print( "in test_manyHellos() about to run...")
         pprint( os.environ )
-        token = os.environ.get('KB_AUTH_TOKEN')
         input_params = { 'hello_msg': "Hai",
                          'num_jobs': 3,
                          'time_limit':  5000000,
-                         'njs_wrapper_url': "https://ci.kbase.us/services/njs_wrapper",
-                         'token': token
+                         'workspace': self.getWsName()
                        }
 
-        ctx = self.getContext()
-        print( "ctx is " )
-        pprint( ctx )
-        callbackURL = os.environ['SDK_CALLBACK_URL']
-        print( "callbackURL is ", callbackURL )
-        # NOTE - this is not right - should call a constructor that is used for further methods
-        #ret = self.getImpl().manyHellos( self.getContext(), input_params )
+        ret = self.getImpl().manyHellos(self.getContext(), input_params)[0]
+        self.assertTrue('output' in ret)
+        self.assertTrue('jobs' in ret)
+        self.assertEqual(3, len(ret['jobs']))
+        return
+        
+        #######################################
+        # All code below is skipped for now.
+        #######################################
+        
         print( "about to initiate ManyHellos() class .." )
         mh = MHC( url=callbackURL, token=token, service_ver = "beta" )
         pprint( mh )

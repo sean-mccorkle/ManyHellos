@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 /**
  * <p>Original spec-file type: ManyHellos_InputResultPair</p>
  * <pre>
- * execution_time - execution time in milliseconds (may be not set by KBParallel).
+ * collect()
  * </pre>
  * 
  */
@@ -22,8 +22,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
     "input",
-    "result",
-    "execution_time"
+    "result"
 })
 public class ManyHellosInputResultPair {
 
@@ -43,8 +42,6 @@ public class ManyHellosInputResultPair {
      */
     @JsonProperty("result")
     private ManyHellosRunEachResult result;
-    @JsonProperty("execution_time")
-    private Long executionTime;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
@@ -101,21 +98,6 @@ public class ManyHellosInputResultPair {
         return this;
     }
 
-    @JsonProperty("execution_time")
-    public Long getExecutionTime() {
-        return executionTime;
-    }
-
-    @JsonProperty("execution_time")
-    public void setExecutionTime(Long executionTime) {
-        this.executionTime = executionTime;
-    }
-
-    public ManyHellosInputResultPair withExecutionTime(Long executionTime) {
-        this.executionTime = executionTime;
-        return this;
-    }
-
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -128,7 +110,7 @@ public class ManyHellosInputResultPair {
 
     @Override
     public String toString() {
-        return ((((((((("ManyHellosInputResultPair"+" [input=")+ input)+", result=")+ result)+", executionTime=")+ executionTime)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((("ManyHellosInputResultPair"+" [input=")+ input)+", result=")+ result)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

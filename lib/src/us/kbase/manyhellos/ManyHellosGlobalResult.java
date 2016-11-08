@@ -2,6 +2,7 @@
 package us.kbase.manyhellos;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import us.kbase.common.service.Tuple2;
 
 
 /**
@@ -19,42 +21,60 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "output"
+    "output",
+    "jobs"
 })
 public class ManyHellosGlobalResult {
 
     @JsonProperty("output")
-    private String output;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private java.lang.String output;
+    @JsonProperty("jobs")
+    private List<Tuple2 <Long, String>> jobs;
+    private Map<java.lang.String, Object> additionalProperties = new HashMap<java.lang.String, Object>();
 
     @JsonProperty("output")
-    public String getOutput() {
+    public java.lang.String getOutput() {
         return output;
     }
 
     @JsonProperty("output")
-    public void setOutput(String output) {
+    public void setOutput(java.lang.String output) {
         this.output = output;
     }
 
-    public ManyHellosGlobalResult withOutput(String output) {
+    public ManyHellosGlobalResult withOutput(java.lang.String output) {
         this.output = output;
         return this;
     }
 
+    @JsonProperty("jobs")
+    public List<Tuple2 <Long, String>> getJobs() {
+        return jobs;
+    }
+
+    @JsonProperty("jobs")
+    public void setJobs(List<Tuple2 <Long, String>> jobs) {
+        this.jobs = jobs;
+    }
+
+    public ManyHellosGlobalResult withJobs(List<Tuple2 <Long, String>> jobs) {
+        this.jobs = jobs;
+        return this;
+    }
+
     @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
+    public Map<java.lang.String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperties(String name, Object value) {
+    public void setAdditionalProperties(java.lang.String name, Object value) {
         this.additionalProperties.put(name, value);
     }
 
     @Override
-    public String toString() {
-        return ((((("ManyHellosGlobalResult"+" [output=")+ output)+", additionalProperties=")+ additionalProperties)+"]");
+    public java.lang.String toString() {
+        return ((((((("ManyHellosGlobalResult"+" [output=")+ output)+", jobs=")+ jobs)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

@@ -45,13 +45,16 @@ class ManyHellos(object):
 
     def manyHellos(self, input_params, context=None):
         """
-        :param input_params: instance of type "ManyHellosInputParams" (was
-           the main service call manyHellos(), now Im not sure what this does
-           - initializes, but that should probably be in the constructor?  
-           maybe manyHellos_prepare()) -> structure: parameter "hello_msg" of
-           String, parameter "time_limit" of Long
+        :param input_params: instance of type "ManyHellosInputParams"
+           (hello_msg - what to print as the message, time_limit - how long
+           the program will run, in seconds, workspace - used to store
+           report(s).) -> structure: parameter "hello_msg" of String,
+           parameter "num_jobs" of Long, parameter "time_limit" of Long,
+           parameter "workspace" of String
         :returns: instance of type "ManyHellos_globalResult" -> structure:
-           parameter "output" of String
+           parameter "output" of String, parameter "jobs" of list of tuple of
+           size 2: parameter "job_number" of Long, parameter "message" of
+           String
         """
         return self._client.call_method(
             'ManyHellos.manyHellos',
@@ -103,8 +106,7 @@ class ManyHellos(object):
            -> structure: parameter "msg" of String, parameter "num_jobs" of
            Long, parameter "workspace" of String, parameter
            "input_result_pairs" of list of type "ManyHellos_InputResultPair"
-           (execution_time - execution time in milliseconds (may be not set
-           by KBParallel).) -> structure: parameter "input" of type
+           (collect()) -> structure: parameter "input" of type
            "ManyHellos_runEachInput" -> structure: parameter "method" of type
            "FullMethodQualifier" -> structure: parameter "module_name" of
            String, parameter "method_name" of String, parameter "service_ver"
@@ -112,10 +114,11 @@ class ManyHellos(object):
            "ManyHellos_task" -> structure: parameter "msg" of String,
            parameter "job_number" of Long, parameter "workspace" of String,
            parameter "result" of type "ManyHellos_runEachResult" (runEach())
-           -> structure: parameter "message" of String, parameter
-           "execution_time" of Long
+           -> structure: parameter "message" of String
         :returns: instance of type "ManyHellos_globalResult" -> structure:
-           parameter "output" of String
+           parameter "output" of String, parameter "jobs" of list of tuple of
+           size 2: parameter "job_number" of Long, parameter "message" of
+           String
         """
         return self._client.call_method(
             'ManyHellos.manyHellos_collect',

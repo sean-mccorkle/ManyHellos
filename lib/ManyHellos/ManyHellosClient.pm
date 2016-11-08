@@ -181,9 +181,15 @@ $input_params is a ManyHellos.ManyHellosInputParams
 $return is a ManyHellos.ManyHellos_globalResult
 ManyHellosInputParams is a reference to a hash where the following keys are defined:
 	hello_msg has a value which is a string
+	num_jobs has a value which is an int
 	time_limit has a value which is an int
+	workspace has a value which is a string
 ManyHellos_globalResult is a reference to a hash where the following keys are defined:
 	output has a value which is a string
+	jobs has a value which is a reference to a list where each element is a reference to a list containing 2 items:
+		0: (job_number) an int
+		1: (message) a string
+
 
 </pre>
 
@@ -195,9 +201,15 @@ $input_params is a ManyHellos.ManyHellosInputParams
 $return is a ManyHellos.ManyHellos_globalResult
 ManyHellosInputParams is a reference to a hash where the following keys are defined:
 	hello_msg has a value which is a string
+	num_jobs has a value which is an int
 	time_limit has a value which is an int
+	workspace has a value which is a string
 ManyHellos_globalResult is a reference to a hash where the following keys are defined:
 	output has a value which is a string
+	jobs has a value which is a reference to a list where each element is a reference to a list containing 2 items:
+		0: (job_number) an int
+		1: (message) a string
+
 
 
 =end text
@@ -503,7 +515,6 @@ ManyHellos_globalInputParams is a reference to a hash where the following keys a
 ManyHellos_InputResultPair is a reference to a hash where the following keys are defined:
 	input has a value which is a ManyHellos.ManyHellos_runEachInput
 	result has a value which is a ManyHellos.ManyHellos_runEachResult
-	execution_time has a value which is an int
 ManyHellos_runEachInput is a reference to a hash where the following keys are defined:
 	method has a value which is a ManyHellos.FullMethodQualifier
 	input_arguments has a value which is a reference to a list containing 1 item:
@@ -521,6 +532,10 @@ ManyHellos_runEachResult is a reference to a hash where the following keys are d
 	message has a value which is a string
 ManyHellos_globalResult is a reference to a hash where the following keys are defined:
 	output has a value which is a string
+	jobs has a value which is a reference to a list where each element is a reference to a list containing 2 items:
+		0: (job_number) an int
+		1: (message) a string
+
 
 </pre>
 
@@ -540,7 +555,6 @@ ManyHellos_globalInputParams is a reference to a hash where the following keys a
 ManyHellos_InputResultPair is a reference to a hash where the following keys are defined:
 	input has a value which is a ManyHellos.ManyHellos_runEachInput
 	result has a value which is a ManyHellos.ManyHellos_runEachResult
-	execution_time has a value which is an int
 ManyHellos_runEachInput is a reference to a hash where the following keys are defined:
 	method has a value which is a ManyHellos.FullMethodQualifier
 	input_arguments has a value which is a reference to a list containing 1 item:
@@ -558,6 +572,10 @@ ManyHellos_runEachResult is a reference to a hash where the following keys are d
 	message has a value which is a string
 ManyHellos_globalResult is a reference to a hash where the following keys are defined:
 	output has a value which is a string
+	jobs has a value which is a reference to a list where each element is a reference to a list containing 2 items:
+		0: (job_number) an int
+		1: (message) a string
+
 
 
 =end text
@@ -812,8 +830,9 @@ sub _validate_version {
 
 =item Description
 
-was the main service call manyHellos(), now Im not sure what this does - initializes, but that
-should probably be in the constructor?   maybe manyHellos_prepare()
+hello_msg - what to print as the message,
+time_limit - how long the program will run, in seconds,
+workspace - used to store report(s).
 
 
 =item Definition
@@ -823,7 +842,9 @@ should probably be in the constructor?   maybe manyHellos_prepare()
 <pre>
 a reference to a hash where the following keys are defined:
 hello_msg has a value which is a string
+num_jobs has a value which is an int
 time_limit has a value which is an int
+workspace has a value which is a string
 
 </pre>
 
@@ -833,7 +854,9 @@ time_limit has a value which is an int
 
 a reference to a hash where the following keys are defined:
 hello_msg has a value which is a string
+num_jobs has a value which is an int
 time_limit has a value which is an int
+workspace has a value which is a string
 
 
 =end text
@@ -855,6 +878,10 @@ time_limit has a value which is an int
 <pre>
 a reference to a hash where the following keys are defined:
 output has a value which is a string
+jobs has a value which is a reference to a list where each element is a reference to a list containing 2 items:
+	0: (job_number) an int
+	1: (message) a string
+
 
 </pre>
 
@@ -864,6 +891,10 @@ output has a value which is a string
 
 a reference to a hash where the following keys are defined:
 output has a value which is a string
+jobs has a value which is a reference to a list where each element is a reference to a list containing 2 items:
+	0: (job_number) an int
+	1: (message) a string
+
 
 
 =end text
@@ -1122,7 +1153,7 @@ message has a value which is a string
 
 =item Description
 
-execution_time - execution time in milliseconds (may be not set by KBParallel).
+collect()
 
 
 =item Definition
@@ -1133,7 +1164,6 @@ execution_time - execution time in milliseconds (may be not set by KBParallel).
 a reference to a hash where the following keys are defined:
 input has a value which is a ManyHellos.ManyHellos_runEachInput
 result has a value which is a ManyHellos.ManyHellos_runEachResult
-execution_time has a value which is an int
 
 </pre>
 
@@ -1144,7 +1174,6 @@ execution_time has a value which is an int
 a reference to a hash where the following keys are defined:
 input has a value which is a ManyHellos.ManyHellos_runEachInput
 result has a value which is a ManyHellos.ManyHellos_runEachResult
-execution_time has a value which is an int
 
 
 =end text

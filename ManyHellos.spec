@@ -17,13 +17,21 @@ module ManyHellos {
        should probably be in the constructor?   maybe manyHellos_prepare()
     */
 
+    /*
+        hello_msg - what to print as the message,
+        time_limit - how long the program will run, in seconds,
+        workspace - used to store report(s).
+    */
     typedef structure {
-        string  hello_msg;      /* what to print as the message */
-        int     time_limit;     /* how long the program will run, in seconds */
+        string hello_msg;
+        int num_jobs;
+        int time_limit;
+        string workspace;
     } ManyHellosInputParams;
 
     typedef structure {
         string output;
+        list<tuple<int job_number, string message>> jobs;
     } ManyHellos_globalResult;
 
     funcdef manyHellos(ManyHellosInputParams input_params) returns (ManyHellos_globalResult) authentication required;
@@ -78,13 +86,9 @@ module ManyHellos {
 
     /* collect() */
 
-    /*
-        execution_time - execution time in milliseconds (may be not set by KBParallel).
-    */
     typedef structure {
         ManyHellos_runEachInput input;
         ManyHellos_runEachResult result;
-        int execution_time;
     } ManyHellos_InputResultPair;
 
     typedef structure {
