@@ -71,9 +71,9 @@ does is run several "hello world" programs.
         print( "workspace is ", input_params["workspace"] )
 
         kbp = KBParallel(os.environ['SDK_CALLBACK_URL'], token=ctx['token'])
-        returnVal = kbp.run({'module_name': 'ManyHellos',
-                             'method_name': 'manyHellos',
-                             'service_ver': 'dev',
+        returnVal = kbp.run({'method': {'module_name': 'ManyHellos',
+                                        'method_name': 'manyHellos',
+                                        'service_ver': 'dev'},
                              'is_local': 1,
                              'global_params': {'msg': input_params["hello_msg"],
                                                'num_jobs': input_params["num_jobs"],
